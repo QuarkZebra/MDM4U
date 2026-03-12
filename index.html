@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MDM4U — Data Management</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf6f0;--white:#fffcf7;--hover:#fdf9f3;
+  --brown:#3d2b1f;--accent:#b8860b;--accent-dim:rgba(184,134,11,.08);--accent-bdr:rgba(184,134,11,.25);
+  --copper:#a0522d;--sage:#5f7a5e;--clay:#9c6644;--muted:#8a7e72;--muted2:#b5aa9e;
+  --text:#2c2418;--t2:#5a4e42;--t3:#8a7e72;--t4:#b5aa9e;
+  --bdr:#e6ddd2;--bdr2:#d4c9bc;
+  --test-bg:rgba(160,82,45,.07);--quiz-bg:rgba(184,134,11,.06);--review-bg:rgba(95,122,94,.06);
+  --present-bg:rgba(156,102,68,.06);
+  --r:8px;--sh:0 1px 3px rgba(44,36,24,.06);--sh2:0 2px 8px rgba(44,36,24,.06),0 8px 24px rgba(44,36,24,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;
+  background-image:
+    radial-gradient(ellipse at 20% 0%,rgba(184,134,11,.04) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 100%,rgba(160,82,45,.04) 0%,transparent 50%);
+  background-attachment:fixed}
+a{color:inherit;text-decoration:none}
+
+.page{max-width:1050px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+
+/* Top Bar */
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,246,240,.9);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bdr);margin:-2.5rem -1.5rem 2rem;padding:.6rem 1.5rem;display:flex;align-items:center;gap:.8rem}
+.top-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.ptrack{flex:1;height:3px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--copper));border-radius:2px;transition:width .6s}
+.ptxt{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);font-weight:600;white-space:nowrap}
+
+/* Header */
+header{margin-bottom:2rem}
+.htop{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
+.chip{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+  padding:.22rem .65rem;border:1px solid var(--accent-bdr);border-radius:100px;background:var(--accent-dim);font-weight:600}
+.hacts{display:flex;gap:.4rem}
+.hbtn{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--t3);cursor:pointer;background:var(--white);
+  border:1px solid var(--bdr);padding:.22rem .65rem;border-radius:100px;transition:all .2s}
+.hbtn:hover{color:var(--t2);border-color:var(--bdr2);background:var(--hover)}
+header h1{font-family:'DM Serif Display',serif;font-size:2.6rem;font-weight:400;letter-spacing:-.02em;line-height:1.1;color:var(--brown)}
+header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
+
+/* Search */
+.sbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;padding:.55rem .9rem;background:var(--white);
+  border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s}
+.sbar:focus-within{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim)}
+.sbar .si{color:var(--t4);font-size:.9rem}
+.sbar input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem}
+.sbar input::placeholder{color:var(--t4)}
+.kbd{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--t4);background:var(--bg);border:1px solid var(--bdr);padding:.1rem .35rem;border-radius:4px}
+
+/* Units */
+.unit{margin-bottom:.5rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--white);box-shadow:var(--sh);
+  overflow:hidden;transition:all .3s ease;opacity:0;transform:translateY(18px)}
+.unit.revealed{opacity:1;transform:translateY(0)}
+.unit:hover{border-color:var(--bdr2);box-shadow:var(--sh2)}
+.unit.current{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim),var(--sh2)}
+
+.uhead{display:flex;align-items:center;padding:.85rem 1.1rem;cursor:pointer;user-select:none;transition:background .15s;gap:.75rem}
+.uhead:hover{background:var(--hover)}
+.unum{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--t4);font-weight:600;min-width:1.6rem}
+.current .unum{color:var(--accent)}
+.utitle{flex:1;font-size:1rem;font-weight:600;color:var(--text);letter-spacing:-.01em}
+.ucount{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--t4)}
+.utag{font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.06em;text-transform:uppercase;padding:.14rem .48rem;border-radius:100px;font-weight:600}
+.utag.active{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bdr)}
+.utag.done{background:rgba(95,122,94,.08);color:var(--sage)}
+.utag.upcoming{background:var(--bg);color:var(--t4)}
+.utag.special{background:rgba(156,102,68,.08);color:var(--clay)}
+.chev{width:16px;height:16px;color:var(--t4);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.unit.open .chev{transform:rotate(180deg);color:var(--t3)}
+.ubody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1)}
+.unit.open .ubody{grid-template-rows:1fr}
+.ubody-inner{overflow:hidden}
+.ucontent{padding:0;border-top:1px solid var(--bdr);overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* Table */
+.ltable{width:100%;border-collapse:collapse;font-size:.84rem}
+.ltable thead tr{background:var(--bg)}
+.ltable th{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--t3);padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap}
+.ltable th:first-child{width:2.5rem;text-align:center}
+.ltable .th-notes{min-width:260px}
+.ltable .th-res{min-width:220px}
+.ltable td{padding:.55rem 1rem;vertical-align:top;border-bottom:1px solid rgba(0,0,0,.03)}
+.ltable tr:last-child td{border-bottom:none}
+.ltable tr:hover{background:rgba(0,0,0,.012)}
+.ltable tr.is-test{background:var(--test-bg)}
+.ltable tr.is-test:hover{background:rgba(160,82,45,.1)}
+.ltable tr.is-quiz{background:var(--quiz-bg)}
+.ltable tr.is-review{background:var(--review-bg)}
+.ltable tr.is-present{background:var(--present-bg)}
+
+.td-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t4);text-align:center;width:2.5rem}
+.td-topic{font-weight:400}
+
+/* Link groups */
+.lgroup{display:flex;flex-direction:column;gap:.2rem}
+.dlink{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;transition:opacity .15s;line-height:1.35}
+.dlink:hover{opacity:.7;text-decoration:underline}
+.dlink.note-link{color:var(--accent);font-weight:500}
+.dlink.completed-link{color:var(--sage);font-size:.72rem;font-weight:500}
+.dlink.completed-link.soon{color:var(--t4);cursor:default}
+.dlink.completed-link.soon:hover{opacity:1;text-decoration:none}
+.dlink.soln{color:var(--sage);font-size:.72rem}
+.dlink.vid{color:var(--copper);font-size:.72rem}
+.dlink.res{color:var(--muted);font-size:.76rem}
+.licon{width:11px;height:11px;flex-shrink:0;opacity:.7}
+
+/* Topic head with date */
+.topic-head{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.12rem}
+.lesson-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--t4);white-space:nowrap;margin-left:auto}
+
+/* Test badge */
+.test-badge{display:inline-block;background:var(--copper);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.06em;text-transform:uppercase;padding:.16rem .48rem;border-radius:3px;font-weight:500}
+/* Quiz badge */
+.quiz-badge{display:inline-block;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.06em;text-transform:uppercase;padding:.16rem .48rem;border-radius:3px;font-weight:500}
+
+/* Note title tooltip */
+.nt-wrap{position:relative;display:inline}
+.nt-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
+  background:var(--text);color:#fff;padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
+  font-family:'DM Sans',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
+.nt-tip{bottom:calc(100% + 5px)}
+.nt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--text)}
+.nt-tip.below{bottom:auto;top:calc(100% + 5px)}
+.nt-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--text)}
+.nt-wrap:hover .nt-tip{display:block}
+
+/* Completed note tooltip */
+.cn-wrap{position:relative;display:inline-flex}
+.cn-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
+  background:var(--text);color:#fff;padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
+  font-family:'DM Sans',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
+.cn-tip{bottom:calc(100% + 5px)}
+.cn-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--text)}
+.cn-tip.below{bottom:auto;top:calc(100% + 5px)}
+.cn-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--text)}
+.cn-wrap:hover .cn-tip{display:block}
+
+/* Legend & FAB */
+.legend{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--bdr);display:flex;flex-wrap:wrap;gap:1.5rem;font-size:.73rem;color:var(--t4)}
+.legend-item{display:flex;align-items:center;gap:.4rem}
+.fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;background:var(--accent);color:#fff;border:none;border-radius:100px;
+  padding:.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:600;cursor:pointer;
+  box-shadow:0 4px 20px rgba(184,134,11,.25);transition:all .25s;display:none;align-items:center;gap:.35rem}
+.fab:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(184,134,11,.35)}
+.fab.visible{display:flex}
+
+@media(max-width:768px){
+  .page{padding:2rem .75rem}header h1{font-size:2rem}
+  .top-bar{margin:-2rem -.75rem 1.5rem;padding:.5rem .75rem}
+  .ltable{min-width:560px}
+  .fab{bottom:1rem;right:1rem}.hacts{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="top-bar">
+  <span class="lbl">Course</span>
+  <div class="ptrack"><div class="pfill" id="pf"></div></div>
+  <span class="ptxt" id="pt"></span>
+</div>
+
+<header>
+  <div class="htop">
+    <span class="chip">MDM4U</span>
+    <div class="hacts">
+      <button class="hbtn" onclick="toggleAll()" id="expBtn">Expand All</button>
+    </div>
+  </div>
+  <h1>Data Management</h1>
+  <div class="sub">Grade 12 · University Preparation</div>
+</header>
+
+<div class="sbar">
+  <span class="si">⌕</span>
+  <input type="text" placeholder="Filter lessons..." id="si" oninput="filterL(this.value)">
+  <span class="kbd">⌘K</span>
+</div>
+
+<div id="units"></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="dlink note-link" style="pointer-events:none;font-size:.72rem">↗ Link</span><span>Blank note &amp; homework</span></div>
+  <div class="legend-item"><span class="dlink completed-link" style="pointer-events:none;font-size:.72rem">✓ Completed</span><span>Completed note</span></div>
+  <div class="legend-item"><span class="dlink soln" style="pointer-events:none">✓ Soln</span><span>Solution</span></div>
+  <div class="legend-item"><span class="dlink vid" style="pointer-events:none">▶ Video</span><span>Video</span></div>
+</div>
+</div>
+
+<button class="fab" id="fab" onclick="jumpC()">↑ Current Unit</button>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const CURRENT_UNIT = 1;
+const TOTAL_UNITS = 8; // 6 curriculum + project + carnival
+
+// ═══════════════════════════════════════════════
+// ICONS
+// ═══════════════════════════════════════════════
+const IC = {
+  doc: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 4h5v2H4zm0 3h8v2H4zm0 3h6v2H4zm9-9H3a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V5l-4-4z"/></svg>`,
+  vid: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M6 3l7 5-7 5V3z"/></svg>`,
+  soln: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 12L2 7.5l1.4-1.4L6.5 9.2l6.1-6.1L14 4.5z"/></svg>`,
+  link: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M4.7 8.7l1.4-1.4 2.6 2.6-1.4 1.4A2 2 0 014.7 8.7zm6.6-6.6A2 2 0 008.7 4.7L7.3 6.1l2.6 2.6 1.4-1.4a2 2 0 000-2.6zM3.3 11.3a3 3 0 004.2 0l1.4-1.4-1.4-1.4-1.4 1.4a1 1 0 01-1.4-1.4l1.4-1.4-1.4-1.4-1.4 1.4a3 3 0 000 4.2z"/></svg>`,
+};
+
+function mkLink(text, href, type) {
+  if (!href) return `<span style="font-size:.76rem;color:var(--t2)">${text}</span>`;
+  let cls = 'dlink res', icon = IC.link;
+  if (type === 'vid') { cls = 'dlink vid'; icon = IC.vid; }
+  else if (type === 'soln') { cls = 'dlink soln'; icon = IC.soln; }
+  else if (type === 'doc') { cls = 'dlink res'; icon = IC.doc; }
+  return `<a href="${href}" target="_blank" class="${cls}">${icon}${text}</a>`;
+}
+
+// ═══════════════════════════════════════════════
+// COURSE DATA
+// ═══════════════════════════════════════════════
+const C = [
+{id:"u1",title:"Organizing Data",days:[
+{n:1,d:"Mon Feb 2",topic:"Intro to Data Management",blank:"https://drive.google.com/file/d/1oTWw1i4vEaWyXCEQ2t6Nd01YkV8k18oM/view",
+  res:[{t:"Course Outline",h:"https://docs.google.com/document/d/1uIehMAgiAb6qhVIGJkKwf6OGowUEbWdfixQM5roZ0Ns/edit"},{t:"Prerequisite Skills (math)",h:"https://drive.google.com/file/d/1PAR-d_Bu6vr6R-a2C36LH05VxAYzS96I/view"},{t:"Textbook Ch 5",h:"https://drive.google.com/file/d/1AVBarE8uRnuNqf71qhU0K5QalYIqi7xK/view",y:"doc"},{t:"Answers",h:"https://drive.google.com/file/d/11MLpgJIK_hd_FZXHINo92uHU0TC-GNLm/view",y:"soln"}]},
+{n:2,d:"Tues Feb 3",topic:"Types of Data",blank:"https://drive.google.com/file/d/1Z1EJDQvesbrn0BfkRKUZ1aCMzzdAj-rn/view",filled:"https://drive.google.com/file/d/1Z7PScWlBDCXBCpaWSj8SNr-e9U1fdncU/view",
+  res:[{t:"Spurious Correlations",h:"https://www.tylervigen.com/spurious-correlations"}]},
+{n:3,d:"Weds Feb 4",topic:"Sampling Methods",blank:"https://drive.google.com/file/d/1ZFM00nEm9TW7J167s8d1j9s7zzNfjVlE/view",filled:"https://drive.google.com/file/d/1ZOvMKM5eg6Z26Cib9UM6uUGMyZga1PQC/view",
+  res:[{t:"Sampling Questions",h:"https://docs.google.com/document/d/1RcVYnBExES2AdvDfuhiZym0n9PJCbOoKO9Qzu8HGvVc/edit",y:"doc"},{t:"SOLN",h:"https://docs.google.com/document/d/117OkGGaecyqEZ29V87av9mx6b2ICqJdtOQmXylOEZuY/edit",y:"soln"}]},
+{n:4,d:"Thurs Feb 5",topic:"Collecting Data",blank:"https://drive.google.com/file/d/1ZgPBiIQuEnlyzXf71x9jSh6JEcZrBzXq/view",filled:"https://drive.google.com/file/d/1zV4YkehHK64SzRvDWKhrsIBf1TiglinA/view",
+  res:[{t:"Why Most Published Research is Wrong",h:"https://www.youtube.com/watch?v=42QuXLucH3Q",y:"vid"}]},
+{n:5,d:"Fri Feb 6",topic:"Creating Surveys & Presenting Data",blank:"https://drive.google.com/file/d/11HQQf_8LV3Iqj_lZ2CD11T0iK-vNpiu-/view",filled:"https://drive.google.com/file/d/1vlscTbJTLWkxyxROrHq2DrUZ47M8RTuh/view",
+  res:[{t:"7 Tips for Good Survey Questions",h:"https://www.youtube.com/watch?v=Iq_fhTuY1hw",y:"vid"}]},
+{n:6,d:"Mon Feb 9",topic:"Stats Project Intro",blank:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit",
+  res:[{t:"Developing Good Research Questions",h:"https://www.youtube.com/watch?v=3YHv3vFJMG0",y:"vid"},{t:"How to Develop Strong Research Questions",h:"https://www.youtube.com/watch?v=71-GucBaM8U",y:"vid"}]},
+{n:7,d:"Tues Feb 10",topic:"Surveys Assignment — Create Form",blank:"https://docs.google.com/document/d/1DKLoQP8_G2sdn50PJWZcgrshwg8peEwl5EkVhhykhUk/edit",
+  res:[{t:"Share Your Survey Here",h:"https://docs.google.com/spreadsheets/d/12Aeshg38phAg6M24EFENtw4lxJAkSPJ2zDbzL9OSOz0/edit"}]},
+{n:8,d:"Weds Feb 11",topic:"Bias",blank:"https://drive.google.com/file/d/1zRIxYNMaOQz8Y4FmJ-w1WgKoxaTzy60l/view",filled:"https://drive.google.com/file/d/1SB65LLJSyg1q_yj8xGt4oQ6XfS-DxgAB/view",
+  res:[{t:"Types of Bias (Broken Down More)",h:"https://www.youtube.com/watch?v=CMa-Y5KSz1A",y:"vid"},{t:"Every Bias Explained in 8 Minutes",h:"https://www.youtube.com/watch?v=8SbV1jN12RY",y:"vid"}]},
+{n:9,d:"Thurs Feb 12",topic:"Big Data Debate",blank:"https://docs.google.com/presentation/d/1Q7aQpqyWvZMujq2QhOhGzCOAZTCW-WWiYE_j3_DN05U/edit",
+  res:[{t:"Ethical Challenges of Big Data",h:"https://pmc.ncbi.nlm.nih.gov/articles/PMC7819582/"},{t:"Google Trends",h:"https://trends.google.com/trends/"}]},
+{n:10,d:"Tues Feb 17",topic:"Surveys And Results Assignment",
+  res:[{t:"Complete All the Surveys",h:"https://docs.google.com/spreadsheets/d/12Aeshg38phAg6M24EFENtw4lxJAkSPJ2zDbzL9OSOz0/edit"}]},
+{n:11,d:"Weds Feb 18",topic:"Validity",blank:"https://drive.google.com/file/d/11oY8J3V0f44kAU6viYf1ANDBqmjJ-rL7/view",filled:"https://docs.google.com/document/d/1jl2-RBVIgGBV-GR2ViG4e18qf7QBw-F07GGmJefRrc8/edit",
+  res:[{t:"Logic Questions",h:"https://docs.google.com/document/d/1rOj2Dz44CDmKuqz56uHXBNLC_rzTNWufmCLtvRaHUo4/edit",y:"doc"},{t:"SOLN",h:"https://docs.google.com/document/d/1SLv4gKG3sfPkMzJcfrgwtTBosXyUGPjq3B4oK66OFmA/edit",y:"soln"}]},
+{n:12,d:"Thurs Feb 19",topic:"Review",blank:"https://docs.google.com/document/d/1xkj7BrfYn5gD5jKQVpk-Vf1Jjh4kVKfpawIceul49xg/edit",filled:"https://docs.google.com/document/d/1y3oYbuO5P_rbEMN09jmlmtOpkJ_uGwKWW624dq9sK28/edit",type:"review",
+  res:[]},
+{n:13,d:"Fri Feb 20",topic:"Test",type:"test",res:[]},
+]},
+
+{id:"u2",title:"One Variable Statistics",days:[
+{n:1,d:"Mon Feb 23",topic:"Sigma Notation",blank:"https://drive.google.com/file/d/11tHLXazNxl-DKH7BAPVtzbDDAbWXSTOw/view",filled:"https://drive.google.com/file/d/1T2ltWoIptW8DXS9QtqLF0SI35cf2llW7/view",
+  res:[{t:"Textbook Ch 6",h:"https://drive.google.com/file/d/1qEnBmoRPvm51DHHn3xdsZGFBVDOiklNt/view",y:"doc"}]},
+{n:2,d:"Tues Feb 24",topic:"Measures of Central Tendency",blank:"https://drive.google.com/file/d/1286cB-JgUZ56CrAlcRs8Wmwjo5t1tKMe/view",filled:"https://drive.google.com/file/d/1BzHaTl5MDWJgJ1RBfBX4xYr26yMNqtxJ/view",
+  res:[{t:"Measures of Central Tendency Vid",h:"https://www.youtube.com/watch?v=AdH5vfobH5E",y:"vid"}]},
+{n:3,d:"Weds Feb 25",topic:"Measures of Spread",blank:"https://drive.google.com/file/d/129erBemNfcJk_h2yZ25f5k_vYHOBmvuR/view",filled:"https://drive.google.com/file/d/12D9llGdqvH2ZoXXJmDVS06dE2_15KIUh/view",
+  res:[{t:"Practice Questions",h:"https://drive.google.com/file/d/1-3kRA4XRReJuLr7OyuOnreUf_opTiqeu/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1VB1CkUFuYIO1l8XyEALVyngmyNPBqCyM/view",y:"soln"}]},
+{n:4,d:"Thurs Feb 26",topic:"Work Period",
+  res:[{t:"Statistics Project",h:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit"}]},
+{n:5,d:"Fri Feb 27",topic:"Standard Deviation",blank:"https://drive.google.com/file/d/12E10OBxYIyU0jJdI2YK-kdaV8rcvruPx/view",filled:"https://drive.google.com/file/d/1UnbhMl-gSOtGkQT5E51iDf7XJseJdoDj/view",
+  res:[{t:"Standard Deviation Vid",h:"https://www.youtube.com/watch?v=MRqtXL2WX2M",y:"vid"}]},
+{n:6,d:"Mon Mar 2",topic:"z-Scores",blank:"https://drive.google.com/file/d/1VOu3HKC_ioPXKnIxfJqRG-SoWf0JB7Fo/view",filled:"https://drive.google.com/file/d/1VQx7RGc1MzRiV1d0HLjviAsHQI8DpaBS/view",
+  res:[{t:"Talent Show Example on Sheets",h:"https://docs.google.com/spreadsheets/d/1gYgw1JAdi6lacoVyOuGLVQeLs3hi80SiWnQEsDBnGjU/edit"}]},
+{n:7,d:"Tues Mar 3",topic:"Height Assignment",blank:"https://docs.google.com/document/d/18eoJ9_bAKSKPKSYBu4YNaU_In1OwG8idxKz2sXe3dGk/edit",
+  res:[{t:"Using Sheets & Desmos Vid",h:"https://www.youtube.com/watch?v=w7KHqf8FHwE",y:"vid"}]},
+{n:8,d:"Weds Mar 4",topic:"Review",blank:"https://drive.google.com/file/d/1vHWOQc8P0hsm2FFq5Gh57yFbq3syRcaF/view",type:"review",
+  res:[{t:"Formula Sheet (Given on Test)",h:"https://drive.google.com/file/d/1obAZReUX3zkxKqZbM4BPyAPfhcUzUYYy/view",y:"doc"}]},
+{n:9,d:"Thurs Mar 5",topic:"Test",type:"test",res:[]},
+]},
+
+{id:"u3",title:"Two Variable Statistics",days:[
+{n:1,d:"Fri Mar 6",topic:"Scatter Plots & Correlation",blank:"https://drive.google.com/file/d/1XKVNhFLSCezLTz95Ze1urC4pt-Oq9y7R/view",filled:"https://drive.google.com/file/d/1-DVIgoe2yOM4HQ3tMSJYiGwIrQdOr0m6/view",
+  res:[{t:"Scatter Plots, Association, and Correlation",h:"https://www.youtube.com/watch?v=AxY7nTkgR6M",y:"vid"}]},
+{n:2,d:"Mon Mar 9",topic:"Calculating r and r²",blank:"https://drive.google.com/file/d/1rhSBCuI0XPO2sE4KHU_mZUVP4JKseKzs/view",filled:"https://drive.google.com/file/d/1-7uUPRdYlGv1SzFd4NIYCRF1Xm_DwdHW/view",
+  res:[{t:"Yield vs Temp on Desmos",h:"https://www.desmos.com/calculator/uwfrtx02ev"},{t:"Yield vs Temp on Sheets",h:"https://docs.google.com/spreadsheets/d/1sBb5vLtYKlB8HOeunjcAMdW6nbtixuqrvliZ5RNpzVo/edit"},{t:"Extra Correlation Questions",h:"https://drive.google.com/file/d/1SgNyplNjnBNAeoVyNFQSBx7q28j68ny2/view",y:"doc"}]},
+{n:3,d:"Tues Mar 10",topic:"Linear Regression",blank:"https://drive.google.com/file/d/1XepAKbQx6yyNbPECFNkpxYTuji7E21iu/view",filled:"https://drive.google.com/file/d/1IRBTCd13p_Xb70WUyo0rBU2jsppVjgJR/view",
+  res:[{t:"Linear Regression Clearly Explained",h:"https://www.youtube.com/watch?v=7ArmBVF2dCs",y:"vid"}]},
+{n:4,d:"Weds Mar 11",topic:"Statistics Project Introduction",blank:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit",
+  res:[{t:"Written Report Rubric",h:"https://drive.google.com/file/d/1LuF0OTy7c9OjBsUBZPl5EfhglaELvANS/view",y:"doc"}]},
+{n:5,d:"Thurs Mar 12",topic:"Cause & Effect",blank:"https://drive.google.com/file/d/1YgpjwgFG3SLWhKnOPFw8GbxCunB-ep4m/view",filledSoon:true,
+  res:[{t:"Simpsons Clip",h:"https://www.youtube.com/watch?v=EiUcY4dECqA",y:"vid"}]},
+{n:6,d:"Fri Mar 13",topic:"Residuals",blank:"https://docs.google.com/document/d/1_2XMQjXRuWzpE4my4B9r16BfoGPurjIsz78xu-YafGk/edit",
+  res:[{t:"More on Residuals",h:"https://www.statology.org/residuals/"},{t:"Learn About Plotting Residuals",h:"https://docs.google.com/spreadsheets/d/1A4C__ZKjlRmJf_nafw9at-L78G_-mU-ugxU55pCp2vk/copy"},{t:"SOLN",h:"https://docs.google.com/spreadsheets/d/1MDCBmaLE4-qO5Yhl8rgrNg8Dh8LVUnX8bCBYmx_4L1Q/edit",y:"soln"},{t:"Data for Today's Note",h:"https://docs.google.com/spreadsheets/d/168IG5s-ltJe4Gq1g_RO82oiGFlgUHcOtW8z_jOgJLQk/copy"},{t:"SOLN",h:"https://docs.google.com/spreadsheets/d/19vPMAlsdtnEIdzWTkLj60sd4IhyB2w_QHVTNNnazEqw/edit",y:"soln"}]},
+{n:7,d:"Mon Mar 23",topic:"Assignment (A Big Relationship)",res:[]},
+{n:8,d:"Tues Mar 24",topic:"Review",blank:"https://docs.google.com/document/d/1ebSETMGctTrBFALbbF8SFZrr0I0KjvK_5YduJEcYaFQ/edit",type:"review",
+  res:[{t:"SOLN",h:"https://docs.google.com/document/d/1huPcv_IGVRPmV7gQqVOb8pudEfEhHz6CsyYLiTAI9Vs/edit",y:"soln"},{t:"Practice Test",h:"https://docs.google.com/document/d/1FLHAIs0GxpC1qVUT50yt3qUDySx4VuVh85TW2OlpXr8/edit",y:"doc"},{t:"SOLN",h:"https://docs.google.com/document/d/1Qhc8_KuJQHdrBM-9ZY0D5u52on7pLpN_v8vrr6ylILk/edit",y:"soln"},{t:"Formula Sheet Given on Test",h:"https://drive.google.com/file/d/1pMXo1Zp5yU6UXalBejDMLcfRxJuECxOo/view",y:"doc"}]},
+{n:9,d:"Weds Mar 25",topic:"Test 3",type:"test",res:[]},
+]},
+
+{id:"sp",title:"Statistics Project",special:true,days:[
+{n:1,d:"",topic:"Research Proposal",topicNote:"To be completed during unit 2",blank:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit",
+  res:[{t:"UNESCO Database",h:"http://data.uis.unesco.org/"},{t:"Statistics Canada",h:"https://www.statcan.gc.ca/en/start"}]},
+{n:2,d:"",topic:"Introduction & Method",topicNote:"To be completed during unit 3",res:[]},
+{n:3,d:"Thurs Mar 26",topic:"Data Collection and Analysis",res:[]},
+{n:4,d:"Fri Mar 27",topic:"Data Collection and Analysis",res:[]},
+{n:5,d:"Mon Mar 30",topic:"Peer Review / Feedback",res:[]},
+{n:6,d:"Tues Mar 31",topic:"Report Writing",res:[]},
+{n:7,d:"",topic:"Presentation",topicNote:"To be completed during units 5 & 6",
+  res:[{t:"Presentation Note/Description",h:"https://docs.google.com/document/d/166XN-NycsX7EhLASyh2XzySn9QaBhtJB1ITguzTlB_8/edit"},{t:"Presentation Rubric",h:"https://docs.google.com/document/d/1cNWB6_8IXLBKj2WTNavUh-RUTCsHAg4sTeXVYqQ--9Y/edit",y:"doc"}]},
+]},
+
+{id:"u4",title:"Basic Probability",days:[
+{n:1,d:"Weds Apr 1",topic:"Intro to Probability",blank:"https://drive.google.com/file/d/1cX0kRD4W6EiFv54Vqa99le3oSQYxMLWz/view",filledSoon:true,
+  res:[{t:"Basic Probability Vid",h:"https://www.youtube.com/watch?v=KzfWUEJjG18",y:"vid"}]},
+{n:2,d:"Thurs Apr 2",topic:"Theoretical Probability",blank:"https://drive.google.com/file/d/1cgFX47RKU9tqdGylktSPkZqAdWjC_AUk/view",filledSoon:true,
+  res:[{t:"The Last Banana: Theoretical Probability",h:"https://www.youtube.com/watch?v=Kgudt4PXs28",y:"vid"}]},
+{n:3,d:"Tues Apr 7",topic:"Experimental Probability",blank:"https://drive.google.com/file/d/1dPQsYIb9NpTBqTTR8WsOMoTzC4St6HHo/view",filledSoon:true,
+  res:[{t:"Spinner Simulation",h:"https://www.nctm.org/adjustablespinner/"}]},
+{n:4,d:"Weds Apr 8",topic:"Mutually Exclusive Events",blank:"https://drive.google.com/file/d/13fJPYpmj4mS6QbwYaUPuM7y3Im7gwjEo/view",filledSoon:true,
+  res:[{t:"Mutually Exclusive with Venn Diagrams",h:"https://www.youtube.com/watch?v=X6usGgwXFyU",y:"vid"},{t:"Mutually Exclusive Worksheet",h:"https://drive.google.com/file/d/1dnWKaI4itaX5LtYtxMoAHN8ftRaaIKLl/view",y:"doc"}]},
+{n:5,d:"Thurs Apr 9",topic:"Independent & Dependent Events",blank:"https://drive.google.com/file/d/1e5moe7COIYVVfSCqM-y5a_NeUbNKismM/view",filledSoon:true,
+  res:[{t:"Independent vs Dependent Events",h:"https://www.youtube.com/watch?v=LS-_ihDKr2M",y:"vid"},{t:"Mutually Exclusive vs Independent Events",h:"https://www.youtube.com/watch?v=aVqmWW3xmdU",y:"vid"}]},
+{n:6,d:"Fri Apr 10",topic:"Probability Quiz",type:"quiz",res:[]},
+{n:7,d:"Mon Apr 13",topic:"Project Presentation Prep",res:[]},
+{n:8,d:"Tues Apr 14",topic:"Conditional Probability",blank:"https://drive.google.com/file/d/1QC16KOKKnDoCiCiDv0YAQxoRpvnVAVfq/view",filledSoon:true,
+  res:[{t:"The Bayesian Trap",h:"https://www.youtube.com/watch?v=R13BD8qKeTg",y:"vid"},{t:"Conditional Probability Explained",h:"https://www.youtube.com/watch?v=ibINrxJLvlM",y:"vid"},{t:"Bayes & Changing Beliefs",h:"https://www.youtube.com/watch?v=HZGCoVF3YvM",y:"vid"}]},
+{n:9,d:"Weds Apr 15",topic:"Review",blank:"https://drive.google.com/file/d/1exPGCPKuZp6Tuih_eqbGWtH3w8XSw9UG/view",type:"review",
+  res:[{t:"SOLN",h:"https://drive.google.com/file/d/136VKGecGdQsJqhLq5cPTRFJBgI-oy99c/view",y:"soln"}]},
+{n:10,d:"Thurs Apr 16",topic:"Work Period",
+  res:[{t:"Formula Sheet For Test",h:"https://drive.google.com/file/d/1s7Rm0AUgd5fnnCk2H7wznjmEwNTBetRZ/view",y:"doc"}]},
+{n:11,d:"Fri Apr 17",topic:"Basic Probability Test",type:"test",res:[]},
+]},
+
+{id:"u5",title:"Combinatorics",days:[
+{n:1,d:"Mon Apr 20",topic:"Organised Counting",blank:"https://drive.google.com/file/d/1s1oMjWbwFvtxMWk7LnzzJYWbmFqq_0mz/view",filledSoon:true,
+  res:[{t:"Addition & Multiplication Principles",h:"https://www.youtube.com/watch?v=yTsbGglDo04",y:"vid"}]},
+{n:2,d:"Tues Apr 21",topic:"Fundamental Principles",blank:"https://drive.google.com/file/d/1fK7VWMJyi7OwYbm3fFTp31jaYTD2RFAY/view",filledSoon:true,
+  res:[{t:"Fundamental Counting Principle",h:"https://www.youtube.com/watch?v=3lmEqp8VhAU",y:"vid"}]},
+{n:3,d:"Weds Apr 22",topic:"Work Period",
+  res:[{t:"Practice Counting",h:"https://drive.google.com/file/d/1EQBzzAAMI11qS9riRI4mDRs9KxBOOE74/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1MCI_QJt63w-FAxZ3keR8mNJkcy9l1V_9/view",y:"soln"}]},
+{n:4,d:"Thurs Apr 23",topic:"Factorials and Permutations",blank:"https://drive.google.com/file/d/1gHjpzNpVbeyy8q7yjBYtn6YBKZ1r5a1V/view",filledSoon:true,
+  res:[{t:"From Factorials to Permutations",h:"https://www.youtube.com/watch?v=tkhyQXqVxWA",y:"vid"}]},
+{n:5,d:"Fri Apr 24",topic:"Rule of Sum",blank:"https://drive.google.com/file/d/1goqAYolDzzW62I67OiDx9z-Mfa_8MM0A/view",filledSoon:true,
+  res:[{t:"Rules of Sum and Product",h:"https://www.youtube.com/watch?v=8JiWWvEoaoc",y:"vid"},{t:"Addition Rules of Probability",h:"https://www.youtube.com/watch?v=g-ARnzajpu4&t=20s",y:"vid"}]},
+{n:6,d:"Tues Apr 28",topic:"Probability Problems",blank:"https://drive.google.com/file/d/1h5n6RF2pul9eqa9hZfQa0doppA_a9KHm/view",filledSoon:true,
+  res:[{t:"Permutations Review Questions",h:"https://drive.google.com/file/d/1hna1f3ZS3sovz57n5gzuL2CtGr1InBd2/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1hwfM6YUh5R5z2XjUUkz2uzVmGsGgYj0_/view",y:"soln"}]},
+{n:7,d:"Weds Apr 29",topic:"From Permutations to Combinations",blank:"https://drive.google.com/file/d/1iVpuKnNjg3_6LXUyuMF5eOtWCSKBCgU2/view",filledSoon:true,
+  res:[{t:"Permutations vs Combinations",h:"https://www.youtube.com/watch?v=iKy-d5_erhI",y:"vid"}]},
+{n:8,d:"Thurs Apr 30",topic:"Permutations Quiz",type:"quiz",res:[]},
+{n:9,d:"Fri May 1",topic:"Problem Solving with Combinations",blank:"https://drive.google.com/file/d/1wf7G_0U00te4Xn7sNPc2Ek0DeyXJHUaK/view",filledSoon:true,
+  res:[{t:"Solving Combinatorics Word Problems",h:"https://www.youtube.com/watch?v=0AYjOu77u3Q",y:"vid"}]},
+{n:10,d:"Mon May 4",topic:"Stats Presentations",type:"present",
+  res:[{t:"Presentation Note/Description",h:"https://docs.google.com/document/d/166XN-NycsX7EhLASyh2XzySn9QaBhtJB1ITguzTlB_8/edit"},{t:"Presentation Rubric",h:"https://docs.google.com/document/d/1cNWB6_8IXLBKj2WTNavUh-RUTCsHAg4sTeXVYqQ--9Y/edit",y:"doc"}]},
+{n:11,d:"Tues May 5",topic:"Counting Summary",blank:"https://drive.google.com/file/d/1cSK7Agt431yzY72XAhLuon-Kb-AU_OuO/view",filledSoon:true,
+  res:[{t:"All of Combinatorics in 30 Mins",h:"https://www.youtube.com/watch?v=VJkvPTY6kZw",y:"vid"},{t:"A Combinatorics Problem That May Get You Thinking",h:"https://www.youtube.com/watch?v=CLN5zMVgD90",y:"vid"}]},
+{n:12,d:"Weds May 6",topic:"Pascal's Triangle",blank:"https://drive.google.com/file/d/1kE797exEHrspJD6lFha1zaAsaM8Z5wK5/view",filledSoon:true,
+  res:[{t:"Binomial Expansion",h:"https://www.youtube.com/watch?v=QKpkhf-Txa8&list=PL5KkMZvBpo5BoekiiL-6NzgRFo4JFnz7k",y:"vid"}]},
+{n:13,d:"Thurs May 7",topic:"Combinations Quiz",type:"quiz",res:[]},
+{n:14,d:"Fri May 8",topic:"Probabilities Using Combinations",blank:"https://drive.google.com/file/d/13GVpaOaKbQmCvlqVaJBdd0YS6mvsA6dK/view",filledSoon:true,
+  res:[{t:"Permutations, Combinations, & Probability",h:"https://www.youtube.com/watch?v=tnF9f3zCCKI",y:"vid"}]},
+{n:15,d:"Mon May 11",topic:"Stats Presentations",type:"present",res:[]},
+{n:16,d:"Tues May 12",topic:"Review",blank:"https://drive.google.com/file/d/1o2_U2tCmlOPjUsmZlke5xv5CLQBw3oO0/view",type:"review",
+  res:[{t:"SOLN",h:"https://drive.google.com/file/d/14Uk-hdh5IkHf0Rkz87rrrC2LPHKitBfP/view",y:"soln"},{t:"Counting Questions",h:"https://drive.google.com/file/d/1kdFPLBGaONaG6ZrOI31DKM4JE80Oygpp/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1D23NLboCVdl1ANu-n4mvmdCMNJOw1Zm2/view",y:"soln"}]},
+{n:17,d:"Weds May 13",topic:"Review II",type:"review",res:[]},
+{n:18,d:"Thurs May 14",topic:"Combinatorics Test",type:"test",res:[]},
+{n:19,d:"Fri May 15",topic:"",res:[]},
+]},
+
+{id:"u6",title:"Probability Distributions",days:[
+{n:1,d:"Tues May 19",topic:"Probability Distributions & Expected Value",blank:"https://drive.google.com/file/d/1m7MLagDTpdmM3Ajs9wIArYcZ6XL43K1T/view",filledSoon:true,
+  res:[{t:"The Main Idea Behind Probability Distributions",h:"https://www.youtube.com/watch?v=oI3hZJqXJuc",y:"vid"}]},
+{n:2,d:"Weds May 20",topic:"Uniform Distribution",blank:"https://drive.google.com/file/d/1mUdBr9JxhwgtexS9LMfeMhJznl2pRjLi/view",filledSoon:true,
+  res:[{t:"How to Learn Probability Distributions",h:"https://www.youtube.com/watch?v=mBCiKUzwdMs",y:"vid"}]},
+{n:3,d:"Thurs May 21",topic:"Stats Presentations",type:"present",res:[]},
+{n:4,d:"Fri May 22",topic:"Binomial Distribution",blank:"https://drive.google.com/file/d/1mkDe444GQHLh03YZ9CdLoCxsrn4C5UdY/view",filledSoon:true,
+  res:[{t:"Buying the Best Product",h:"https://www.youtube.com/watch?v=8idr1WZ1A7Q",y:"vid"}]},
+{n:5,d:"Mon May 25",topic:"Hypergeometric Distributions",blank:"https://drive.google.com/file/d/1nKHIHiK5_kGpAEsvDiZC7JJ49QeVAn8I/view",filledSoon:true,
+  res:[{t:"The Hypergeometric Probability Distribution",h:"https://www.youtube.com/watch?v=uzN7U88KSx8",y:"vid"}]},
+{n:6,d:"Tues May 26",topic:"Geometric Distributions",blank:"https://drive.google.com/file/d/1nVf0_22pnmcQgMm5C4rh-inrMheKFqJv/view",filledSoon:true,
+  res:[{t:"Geometric Distributions & the Birthday Paradox",h:"https://www.youtube.com/watch?v=5VMTeBoEcQg",y:"vid"}]},
+{n:7,d:"Weds May 27",topic:"Stats Presentations",type:"present",res:[]},
+{n:8,d:"Thurs May 28",topic:"Discrete Quiz",type:"quiz",res:[]},
+{n:9,d:"Fri May 29",topic:"Continuous Random Variables",blank:"https://drive.google.com/file/d/1nj95qf0ABgD3BDKxGJtik2_4diCgsL1_/view",filledSoon:true,
+  res:[{t:"Understanding Continuous Random Variables",h:"https://www.youtube.com/watch?v=UVQs9zikfe0",y:"vid"}]},
+{n:10,d:"Mon Jun 1",topic:"The Normal Distribution",blank:"https://drive.google.com/file/d/1TP2J8VXP-93treHpCtZ3SjgCzmFusxel/view",filledSoon:true,
+  res:[{t:"z-Score Calculator (Sheets)",h:"https://docs.google.com/spreadsheets/d/12Cclq8Av9eT0BB-mM37J9HcNZ34DoV4KuNJG1GTUwYU/copy"},{t:"The Normal Distribution Clearly Explained",h:"https://www.youtube.com/watch?v=rzFX5NWojp0",y:"vid"},{t:"Normal Distribution (PDF, CDF, PPF) in 3 Minutes",h:"https://www.youtube.com/watch?v=3VYupIsbLlY",y:"vid"},{t:"Normal Distribution Using Tables",h:"https://www.youtube.com/watch?v=xI9ZHGOSaCg",y:"vid"}]},
+{n:11,d:"Tues Jun 2",topic:"Normal Sampling & Modelling",blank:"https://drive.google.com/file/d/1CzuN1DM8TWluygM7Mz5vVAZRI5VH2DK5/view",filledSoon:true,
+  res:[{t:"Sampling From a Normal Distribution Clearly Explained",h:"https://www.youtube.com/watch?v=XLCWeSVzHUU",y:"vid"}]},
+{n:12,d:"Weds Jun 3",topic:"Review",type:"review",res:[]},
+{n:13,d:"Thurs Jun 4",topic:"Continuous Quiz",type:"quiz",res:[]},
+{n:14,d:"Fri Jun 5",topic:"Carnival Planning",res:[]},
+{n:15,d:"Mon Jun 8",topic:"Repeated Sampling & Hypothesis Testing",blank:"https://drive.google.com/file/d/180O1EWFrIykMahrNV5FT_COQqLkKQJUN/view",filledSoon:true,
+  res:[{t:"Hypothesis Testing and The Null Hypothesis",h:"https://www.youtube.com/watch?v=0oc49DyA3hU",y:"vid"}]},
+{n:16,d:"Tues Jun 9",topic:"Confidence Intervals",blank:"https://drive.google.com/file/d/1ZuAudR8ZE31Pdx--zUBRoUD67O6_jUvF/view",filledSoon:true,
+  res:[{t:"REWATCH: Why Most Published Research is Wrong",h:"https://www.youtube.com/watch?v=42QuXLucH3Q",y:"vid"}]},
+{n:17,d:"Weds Jun 10",topic:"Connections to Discrete Random Variables",blank:"https://drive.google.com/file/d/1HeNpSO4L6EhMOFcqIfGu3iFf6detA95a/view",filledSoon:true,
+  res:[{t:"But What is the Central Limit Theorem",h:"https://www.youtube.com/watch?v=zeJD6dqJ5lo",y:"vid"}]},
+{n:18,d:"Mon Jun 15",topic:"Review",type:"review",
+  res:[{t:"Formula Sheet for Test",h:"https://drive.google.com/file/d/1GGyyt0gFtBAovkVGp1TVA82ChyHoXnWe/view",y:"doc"}]},
+{n:19,d:"Tues Jun 16",topic:"Probability Distributions Test",type:"test",res:[]},
+]},
+
+{id:"carnival",title:"Carnival",special:true,days:[
+{n:1,d:"",topic:"Carnival Planning",topicNote:"To be completed during unit 6",blank:"https://docs.google.com/document/d/1p-_PJhjXNnMGIQ1SvB2zfvBsRLOPud73DJA8vc9IEOE/edit",
+  res:[]},
+{n:2,d:"Thurs Jun 11",topic:"Carnival Setup",res:[]},
+{n:3,d:"Fri Jun 12",topic:"Carnival!!!",blank:"https://docs.google.com/document/d/1p-_PJhjXNnMGIQ1SvB2zfvBsRLOPud73DJA8vc9IEOE/edit",
+  res:[]},
+{n:4,d:"Tues Jan 20",topic:"Report Writing",res:[]},
+{n:5,d:"Weds Jan 21",topic:"Report Writing",res:[]},
+]},
+];
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+
+function renderRes(items) {
+  if (!items || items.length === 0) return '<span style="color:var(--t4)">—</span>';
+  return `<div class="lgroup">${items.map(i => mkLink(i.t, i.h, i.y)).join('')}</div>`;
+}
+
+function renderUnit(unit, idx) {
+  const uIdx = idx + 1;
+  const isCurrent = uIdx === CURRENT_UNIT;
+  let status, statusLabel;
+  if (unit.special) {
+    status = 'special';
+    statusLabel = 'Ongoing';
+  } else if (isCurrent) {
+    status = 'active';
+    statusLabel = 'Current';
+  } else if (uIdx < CURRENT_UNIT) {
+    status = 'done';
+    statusLabel = 'Done';
+  } else {
+    status = 'upcoming';
+    statusLabel = 'Upcoming';
+  }
+
+  // Display number: curriculum units get numbers, specials get icons
+  const displayNum = unit.special ? '✦' : String(uIdx).padStart(2,'0');
+
+  const rows = unit.days.map((day, di) => {
+    if (!day.topic) return ''; // skip empty days
+    const rc = day.type === 'test' ? 'is-test' : day.type === 'quiz' ? 'is-quiz' : day.type === 'review' ? 'is-review' : day.type === 'present' ? 'is-present' : '';
+    const tipDir = di === 0 ? 'below' : '';
+
+    // Topic cell
+    let topicHTML = '';
+    if (day.type === 'test') {
+      topicHTML = `<div class="topic-head"><span class="test-badge">${day.topic}</span>${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>`;
+    } else if (day.type === 'quiz') {
+      topicHTML = `<div class="topic-head"><span class="quiz-badge">${day.topic}</span>${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>`;
+    } else {
+      let titleLink = '';
+      if (day.blank) {
+        titleLink = `<span class="nt-wrap"><a href="${day.blank}" target="_blank" class="dlink note-link">${IC.doc}${day.topic}</a><span class="nt-tip ${tipDir}">Click to view blank note and homework</span></span>`;
+      } else {
+        titleLink = `<span style="font-size:.84rem;font-weight:500">${day.topic}</span>`;
+      }
+
+      // Subtitle note for special units
+      let noteHTML = '';
+      if (day.topicNote) {
+        noteHTML = `<div style="font-size:.7rem;color:var(--t3);font-style:italic;margin-top:.1rem">${day.topicNote}</div>`;
+      }
+
+      let completedHTML = '';
+      if (day.filled) {
+        completedHTML = `<span class="cn-wrap"><a href="${day.filled}" target="_blank" class="dlink completed-link">${IC.soln}Completed Note</a></span>`;
+      } else if (day.filledSoon && day.blank) {
+        completedHTML = `<span class="cn-wrap"><span class="dlink completed-link soon">${IC.doc}Completed Note</span><span class="cn-tip ${tipDir}">Coming soon</span></span>`;
+      }
+
+      topicHTML = `<div class="topic-head">${titleLink}${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>${noteHTML}${completedHTML}`;
+    }
+
+    return `<tr class="${rc}"><td class="td-num">${day.n}</td><td class="td-topic">${topicHTML}</td><td>${renderRes(day.res)}</td></tr>`;
+  }).join('');
+
+  return `<div class="unit${isCurrent ? ' current' : ''}" data-unit="${uIdx}">
+    <div class="uhead" onclick="toggleU(this)">
+      <span class="unum">${displayNum}</span>
+      <span class="utitle">${unit.title}</span>
+      <span class="ucount">${unit.days.filter(d=>d.topic).length} days</span>
+      <span class="utag ${status}">${statusLabel}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="ubody"><div class="ubody-inner"><div class="ucontent">
+      <table class="ltable">
+        <thead><tr><th>#</th><th class="th-notes">Course Notes & Homework</th><th class="th-res">Resources</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div></div></div>
+  </div>`;
+}
+
+// Build
+const container = document.getElementById('units');
+container.innerHTML = C.map((u, i) => renderUnit(u, i)).join('');
+
+// ── Toggle ──
+function toggleU(h) { h.parentElement.classList.toggle('open'); }
+
+let allExp = false;
+function toggleAll() {
+  allExp = !allExp;
+  document.querySelectorAll('.unit').forEach(u => allExp ? u.classList.add('open') : u.classList.remove('open'));
+  document.getElementById('expBtn').textContent = allExp ? 'Collapse All' : 'Expand All';
+  if (!allExp) { const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`); if (c) c.classList.add('open'); }
+}
+
+// ── Search ──
+function filterL(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.unit').forEach(u => {
+    if (!q) { u.style.display = ''; return; }
+    const m = u.textContent.toLowerCase().includes(q);
+    u.style.display = m ? '' : 'none';
+    if (m && q.length > 1) u.classList.add('open');
+  });
+}
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); document.getElementById('si').focus(); }
+  if (e.key === 'Escape') { const i = document.getElementById('si'); i.blur(); i.value = ''; filterL(''); }
+});
+
+// ── Jump ──
+function jumpC() {
+  const c = document.querySelector('.unit.current');
+  if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (!c.classList.contains('open')) c.classList.add('open'); }
+}
+
+// ── Scroll reveal ──
+const rObs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); rObs.unobserve(e.target); } });
+}, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
+
+const fObs = new IntersectionObserver(([e]) => {
+  document.getElementById('fab').classList.toggle('visible', !e.isIntersecting);
+}, { threshold: 0.1 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`);
+  if (c) c.classList.add('open');
+
+  // Progress: count curriculum units only (not special)
+  const curriculumUnits = C.filter(u => !u.special).length;
+  const done = Math.max(0, CURRENT_UNIT - 1);
+  document.getElementById('pf').style.width = Math.round((done / curriculumUnits) * 100) + '%';
+  document.getElementById('pt').textContent = `${done}/${curriculumUnits}`;
+
+  document.querySelectorAll('.unit').forEach((u, i) => {
+    u.style.transitionDelay = `${i * 0.06}s`;
+    u.style.transitionDuration = '0.5s';
+    u.style.transitionTimingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)';
+    u.style.transitionProperty = 'opacity, transform';
+    rObs.observe(u);
+  });
+
+  if (c) fObs.observe(c);
+});
+</script>
+</body>
+</html>
