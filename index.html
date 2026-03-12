@@ -7,6 +7,9 @@
 <title>MDM4U — Data Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700;800&family=Karla:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════════════
+   LIGHT THEME (default)
+   ═══════════════════════════════════════════════ */
 :root{
   --bg:#f3ede4;--white:#fdfaf5;--hover:#f9f5ee;
   --brown:#2c1e12;--accent:#a64b2a;--accent-dim:rgba(166,75,42,.07);--accent-bdr:rgba(166,75,42,.20);
@@ -16,17 +19,38 @@
   --test-bg:rgba(160,82,45,.08);--quiz-bg:rgba(166,75,42,.05);--review-bg:rgba(105,128,104,.06);
   --present-bg:rgba(156,102,68,.06);
   --r:8px;--sh:0 1px 3px rgba(44,36,24,.06);--sh2:0 2px 8px rgba(44,36,24,.06),0 8px 24px rgba(44,36,24,.04);
+  --bar-opacity:.045;--topbar-bg:rgba(243,237,228,.9);
+  --fab-sh:0 4px 20px rgba(166,75,42,.25);--fab-sh2:0 6px 28px rgba(166,75,42,.35);
+  --today-bg:rgba(166,75,42,.10);--today-bdr:rgba(166,75,42,.30);
 }
+
+/* ═══════════════════════════════════════════════
+   DARK THEME
+   ═══════════════════════════════════════════════ */
+html.dark{
+  --bg:#1a1a1e;--white:#232328;--hover:#2a2a30;
+  --brown:#d0c8be;--accent:#c08060;--accent-dim:rgba(192,128,96,.09);--accent-bdr:rgba(192,128,96,.20);
+  --copper:#c08060;--sage:#7ea87e;--clay:#c09870;--muted:#8a8280;--muted2:#54504e;
+  --text:#d5d0ca;--t2:#a8a098;--t3:#706a62;--t4:#484440;
+  --bdr:#333338;--bdr2:#44444a;
+  --test-bg:rgba(192,128,96,.07);--quiz-bg:rgba(192,128,96,.05);--review-bg:rgba(126,168,126,.06);
+  --present-bg:rgba(192,152,112,.06);
+  --sh:0 1px 3px rgba(0,0,0,.2);--sh2:0 2px 8px rgba(0,0,0,.2),0 8px 24px rgba(0,0,0,.15);
+  --bar-opacity:.04;--topbar-bg:rgba(26,26,30,.92);
+  --fab-sh:0 4px 20px rgba(0,0,0,.4);--fab-sh2:0 6px 28px rgba(0,0,0,.5);
+  --today-bg:rgba(192,128,96,.12);--today-bdr:rgba(192,128,96,.35);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Karla',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;
-  background-attachment:fixed}
+  background-attachment:fixed;transition:background .3s,color .3s}
 a{color:inherit;text-decoration:none}
 
 .page{max-width:1050px;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative;z-index:1}
 
 /* Top Bar */
-.top-bar{position:sticky;top:0;z-index:100;background:rgba(243,237,228,.9);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--bdr);margin:-2.5rem -1.5rem 2rem;padding:.6rem 1.5rem;display:flex;align-items:center;gap:.8rem}
+.top-bar{position:sticky;top:0;z-index:100;background:var(--topbar-bg);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bdr);margin:-2.5rem -1.5rem 2rem;padding:.6rem 1.5rem;display:flex;align-items:center;gap:.8rem;transition:background .3s}
 .top-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
 .ptrack{flex:1;height:3px;background:var(--bdr);border-radius:2px;overflow:hidden}
 .pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--copper));border-radius:2px;transition:width .6s}
@@ -44,9 +68,15 @@ header{margin-bottom:2rem}
 header h1{font-family:'Bitter',serif;font-size:2.6rem;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--brown)}
 header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
 
+/* Dark mode toggle */
+.dm-toggle{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--t3);cursor:pointer;background:var(--white);
+  border:1px solid var(--bdr);padding:.22rem .65rem;border-radius:100px;transition:all .2s;display:flex;align-items:center;gap:.3rem}
+.dm-toggle:hover{color:var(--t2);border-color:var(--bdr2);background:var(--hover)}
+.dm-icon{font-size:.8rem;line-height:1}
+
 /* Search */
 .sbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;padding:.55rem .9rem;background:var(--white);
-  border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s}
+  border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s,background .3s}
 .sbar:focus-within{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim)}
 .sbar .si{color:var(--t4);font-size:.9rem}
 .sbar input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Karla',sans-serif;font-size:.85rem}
@@ -89,11 +119,17 @@ header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
 .ltable td{padding:.55rem 1rem;vertical-align:top;border-bottom:1px solid rgba(0,0,0,.03)}
 .ltable tr:last-child td{border-bottom:none}
 .ltable tr:hover{background:rgba(0,0,0,.012)}
+html.dark .ltable tr:hover{background:rgba(255,255,255,.02)}
 .ltable tr.is-test{background:var(--test-bg)}
 .ltable tr.is-test:hover{background:rgba(160,82,45,.1)}
 .ltable tr.is-quiz{background:var(--quiz-bg)}
 .ltable tr.is-review{background:var(--review-bg)}
 .ltable tr.is-present{background:var(--present-bg)}
+.ltable tr.is-today{background:var(--today-bg);border-left:3px solid var(--accent)}
+
+/* Staggered row reveal */
+.ltable tbody tr{opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}
+.unit.open .ltable tbody tr{opacity:1;transform:translateY(0)}
 
 .td-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t4);text-align:center;width:2.5rem}
 .td-topic{font-weight:400}
@@ -125,7 +161,7 @@ header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
 /* Note title tooltip */
 .nt-wrap{position:relative;display:inline}
 .nt-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
-  background:var(--text);color:#fff;padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
+  background:var(--text);color:var(--bg);padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
   font-family:'Karla',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
 .nt-tip{bottom:calc(100% + 5px)}
 .nt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--text)}
@@ -136,7 +172,7 @@ header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
 /* Completed note tooltip */
 .cn-wrap{position:relative;display:inline-flex}
 .cn-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
-  background:var(--text);color:#fff;padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
+  background:var(--text);color:var(--bg);padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
   font-family:'Karla',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
 .cn-tip{bottom:calc(100% + 5px)}
 .cn-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--text)}
@@ -149,34 +185,67 @@ header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
 .legend-item{display:flex;align-items:center;gap:.4rem}
 .fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;background:var(--accent);color:#fff;border:none;border-radius:100px;
   padding:.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:600;cursor:pointer;
-  box-shadow:0 4px 20px rgba(166,75,42,.25);transition:all .25s;display:none;align-items:center;gap:.35rem}
-.fab:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(166,75,42,.35)}
+  box-shadow:var(--fab-sh);transition:all .25s;display:none;align-items:center;gap:.35rem}
+.fab:hover{transform:translateY(-2px);box-shadow:var(--fab-sh2)}
 .fab.visible{display:flex}
+
+/* Today banner */
+.today-banner{background:var(--accent-dim);border:1px solid var(--accent-bdr);border-radius:var(--r);
+  padding:.6rem 1rem;margin-bottom:1rem;display:none;align-items:center;gap:.6rem;font-size:.82rem}
+.today-banner.show{display:flex}
+.today-banner .tb-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);font-weight:600;white-space:nowrap}
+.today-banner .tb-topic{font-weight:600;color:var(--text)}
+.today-banner .tb-date{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--t3);margin-left:auto;white-space:nowrap}
 
 @media(max-width:768px){
   .page{padding:2rem .75rem}header h1{font-size:2rem}
   .top-bar{margin:-2rem -.75rem 1.5rem;padding:.5rem .75rem}
   .ltable{min-width:560px}
-  .fab{bottom:1rem;right:1rem}.hacts{display:none}
+  .fab{bottom:1rem;right:1rem}.hacts .hbtn{display:none}
+}
+
+/* ═══════════════════════════════════════════════
+   PRINT STYLESHEET
+   ═══════════════════════════════════════════════ */
+@media print{
+  *{color-adjust:exact;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html.dark{--bg:#fff;--white:#fff;--text:#000;--t2:#333;--t3:#666;--t4:#999;
+    --bdr:#ccc;--brown:#000;--accent:#a64b2a;--copper:#a0522d;--sage:#698068}
+  body{background:#fff!important}
+  #bgBars,.fab,.top-bar,.sbar,.hacts,.dm-toggle,.today-banner{display:none!important}
+  .page{max-width:100%;padding:0}
+  .unit{break-inside:avoid;page-break-inside:avoid;margin-bottom:1rem;border:1px solid #ccc;box-shadow:none!important;
+    opacity:1!important;transform:none!important}
+  .unit,.unit.open{display:block}
+  .ubody{display:block!important;grid-template-rows:1fr!important}
+  .ubody-inner{overflow:visible!important}
+  .unit.current{border-color:#ccc;box-shadow:none!important}
+  .ltable tbody tr{opacity:1!important;transform:none!important}
+  .chev{display:none}
+  .legend{page-break-before:avoid}
+  header h1{font-size:2rem}
+  a{text-decoration:none!important}
+  .dlink:hover{text-decoration:none!important}
 }
 </style>
 </head>
 <body>
 <!-- Bar chart background -->
-<svg id="bgBars" style="position:fixed;bottom:0;left:0;width:100%;height:100%;opacity:.045;pointer-events:none;z-index:0" preserveAspectRatio="xMidYMax slice" viewBox="0 0 240 70">
-<rect x="4" y="52" width="6.5" height="18" rx="1" fill="#a64b2a"/><rect x="13.2" y="38" width="6.5" height="32" rx="1" fill="#a64b2a"/>
-<rect x="22.4" y="25" width="6.5" height="45" rx="1" fill="#a64b2a"/><rect x="31.6" y="42" width="6.5" height="28" rx="1" fill="#a64b2a"/>
-<rect x="40.8" y="18" width="6.5" height="52" rx="1" fill="#a64b2a"/><rect x="50" y="32" width="6.5" height="38" rx="1" fill="#a64b2a"/>
-<rect x="59.2" y="8" width="6.5" height="62" rx="1" fill="#a64b2a"/><rect x="68.4" y="45" width="6.5" height="25" rx="1" fill="#a64b2a"/>
-<rect x="77.6" y="22" width="6.5" height="48" rx="1" fill="#a64b2a"/><rect x="86.8" y="35" width="6.5" height="35" rx="1" fill="#a64b2a"/>
-<rect x="96" y="15" width="6.5" height="55" rx="1" fill="#a64b2a"/><rect x="105.2" y="48" width="6.5" height="22" rx="1" fill="#a64b2a"/>
-<rect x="114.4" y="28" width="6.5" height="42" rx="1" fill="#a64b2a"/><rect x="123.6" y="12" width="6.5" height="58" rx="1" fill="#a64b2a"/>
-<rect x="132.8" y="40" width="6.5" height="30" rx="1" fill="#a64b2a"/><rect x="142" y="20" width="6.5" height="50" rx="1" fill="#a64b2a"/>
-<rect x="151.2" y="50" width="6.5" height="20" rx="1" fill="#a64b2a"/><rect x="160.4" y="26" width="6.5" height="44" rx="1" fill="#a64b2a"/>
-<rect x="169.6" y="34" width="6.5" height="36" rx="1" fill="#a64b2a"/><rect x="178.8" y="8" width="6.5" height="62" rx="1" fill="#a64b2a"/>
-<rect x="188" y="43" width="6.5" height="27" rx="1" fill="#a64b2a"/><rect x="197.2" y="30" width="6.5" height="40" rx="1" fill="#a64b2a"/>
-<rect x="206.4" y="17" width="6.5" height="53" rx="1" fill="#a64b2a"/><rect x="215.6" y="37" width="6.5" height="33" rx="1" fill="#a64b2a"/>
-<rect x="224.8" y="23" width="6.5" height="47" rx="1" fill="#a64b2a"/>
+<svg id="bgBars" style="position:fixed;bottom:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;transition:opacity .3s" preserveAspectRatio="xMidYMax slice" viewBox="0 0 240 70">
+<rect x="4" y="52" width="6.5" height="18" rx="1" fill="currentColor"/><rect x="13.2" y="38" width="6.5" height="32" rx="1" fill="currentColor"/>
+<rect x="22.4" y="25" width="6.5" height="45" rx="1" fill="currentColor"/><rect x="31.6" y="42" width="6.5" height="28" rx="1" fill="currentColor"/>
+<rect x="40.8" y="18" width="6.5" height="52" rx="1" fill="currentColor"/><rect x="50" y="32" width="6.5" height="38" rx="1" fill="currentColor"/>
+<rect x="59.2" y="8" width="6.5" height="62" rx="1" fill="currentColor"/><rect x="68.4" y="45" width="6.5" height="25" rx="1" fill="currentColor"/>
+<rect x="77.6" y="22" width="6.5" height="48" rx="1" fill="currentColor"/><rect x="86.8" y="35" width="6.5" height="35" rx="1" fill="currentColor"/>
+<rect x="96" y="15" width="6.5" height="55" rx="1" fill="currentColor"/><rect x="105.2" y="48" width="6.5" height="22" rx="1" fill="currentColor"/>
+<rect x="114.4" y="28" width="6.5" height="42" rx="1" fill="currentColor"/><rect x="123.6" y="12" width="6.5" height="58" rx="1" fill="currentColor"/>
+<rect x="132.8" y="40" width="6.5" height="30" rx="1" fill="currentColor"/><rect x="142" y="20" width="6.5" height="50" rx="1" fill="currentColor"/>
+<rect x="151.2" y="50" width="6.5" height="20" rx="1" fill="currentColor"/><rect x="160.4" y="26" width="6.5" height="44" rx="1" fill="currentColor"/>
+<rect x="169.6" y="34" width="6.5" height="36" rx="1" fill="currentColor"/><rect x="178.8" y="8" width="6.5" height="62" rx="1" fill="currentColor"/>
+<rect x="188" y="43" width="6.5" height="27" rx="1" fill="currentColor"/><rect x="197.2" y="30" width="6.5" height="40" rx="1" fill="currentColor"/>
+<rect x="206.4" y="17" width="6.5" height="53" rx="1" fill="currentColor"/><rect x="215.6" y="37" width="6.5" height="33" rx="1" fill="currentColor"/>
+<rect x="224.8" y="23" width="6.5" height="47" rx="1" fill="currentColor"/>
 </svg>
 <div class="page">
 
@@ -190,12 +259,21 @@ header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
   <div class="htop">
     <span class="chip">MDM4U</span>
     <div class="hacts">
+      <button class="dm-toggle" id="dmBtn" onclick="toggleDark()">
+        <span class="dm-icon" id="dmIcon">☀︎</span> <span id="dmLabel">Light</span>
+      </button>
       <button class="hbtn" onclick="toggleAll()" id="expBtn">Expand All</button>
     </div>
   </div>
   <h1>Data Management</h1>
   <div class="sub">Grade 12 · University Preparation</div>
 </header>
+
+<div class="today-banner" id="todayBanner">
+  <span class="tb-label">Today</span>
+  <span class="tb-topic" id="todayTopic"></span>
+  <span class="tb-date" id="todayDate"></span>
+</div>
 
 <div class="sbar">
   <span class="si">⌕</span>
@@ -217,10 +295,53 @@ header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
 
 <script>
 // ═══════════════════════════════════════════════
-// CONFIG
+// DARK MODE
 // ═══════════════════════════════════════════════
-const CURRENT_UNIT = 3;
-const TOTAL_UNITS = 8; // 6 curriculum + project + carnival
+function applyTheme(dark) {
+  document.documentElement.classList.toggle('dark', dark);
+  document.getElementById('dmIcon').textContent = dark ? '☾' : '☀︎';
+  document.getElementById('dmLabel').textContent = dark ? 'Dark' : 'Light';
+  // Update bar chart SVG colour & opacity
+  const svg = document.getElementById('bgBars');
+  svg.style.color = dark ? '#c08060' : '#a64b2a';
+  svg.style.opacity = dark ? '.04' : '.045';
+}
+function toggleDark() {
+  const going = !document.documentElement.classList.contains('dark');
+  applyTheme(going);
+  try { localStorage.setItem('mdm4u-dark', going ? '1' : '0'); } catch(e){}
+}
+// Init: check saved preference, then system preference
+(function(){
+  let dark = false;
+  try {
+    const saved = localStorage.getItem('mdm4u-dark');
+    if (saved !== null) { dark = saved === '1'; }
+    else { dark = window.matchMedia('(prefers-color-scheme: dark)').matches; }
+  } catch(e) {
+    dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  applyTheme(dark);
+  // Listen for system changes (only if no manual override)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    try { if (localStorage.getItem('mdm4u-dark') !== null) return; } catch(ex){}
+    applyTheme(e.matches);
+  });
+})();
+
+// ═══════════════════════════════════════════════
+// SEASONAL ACCENT (subtle hue shift)
+// Sep-Nov: warm amber · Dec-Feb: cool sienna · Mar-May: earthy terracotta · Jun-Aug: golden
+// ═══════════════════════════════════════════════
+(function(){
+  const m = new Date().getMonth(); // 0-11
+  let hueShift = '0deg';
+  if (m >= 8 && m <= 10) hueShift = '-8deg';      // Sep-Nov: slightly cooler
+  else if (m >= 11 || m <= 1) hueShift = '5deg';   // Dec-Feb: slightly warmer
+  else if (m >= 2 && m <= 4) hueShift = '0deg';    // Mar-May: base
+  else hueShift = '-5deg';                          // Jun-Aug: slightly golden
+  if (hueShift !== '0deg') document.documentElement.style.filter = `hue-rotate(${hueShift})`;
+})();
 
 // ═══════════════════════════════════════════════
 // ICONS
@@ -239,6 +360,30 @@ function mkLink(text, href, type) {
   else if (type === 'soln') { cls = 'dlink soln'; icon = IC.soln; }
   else if (type === 'doc') { cls = 'dlink res'; icon = IC.doc; }
   return `<a href="${href}" target="_blank" class="${cls}">${icon}${text}</a>`;
+}
+
+// ═══════════════════════════════════════════════
+// DATE PARSING — for auto-detection
+// Parses "Mon Feb 2" style dates into a Date object
+// Uses the YEAR from the course data context (semester start)
+// ═══════════════════════════════════════════════
+const COURSE_YEAR = 2026; // ← Change this to match your school year
+function parseDay(dStr) {
+  if (!dStr) return null;
+  const parts = dStr.replace(/,/g,'').split(/\s+/);
+  if (parts.length < 3) return null;
+  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const mon = months[parts[1]];
+  if (mon === undefined) return null;
+  const day = parseInt(parts[2]);
+  if (isNaN(day)) return null;
+  // Handle semester 2 dates that wrap into January (e.g. Carnival report writing)
+  let year = COURSE_YEAR;
+  if (mon <= 1) {
+    // Jan/Feb could be start of course OR next year for carnival
+    // If the first unit starts in Feb, keep same year; otherwise bump
+  }
+  return new Date(year, mon, day);
 }
 
 // ═══════════════════════════════════════════════
@@ -427,6 +572,48 @@ const C = [
 ];
 
 // ═══════════════════════════════════════════════
+// AUTO-DETECT CURRENT UNIT & DAY
+// ═══════════════════════════════════════════════
+let CURRENT_UNIT = 1;
+let TODAY_UNIT = -1;
+let TODAY_DAY = -1;
+
+(function autoDetect(){
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let bestUnit = -1, bestDay = -1, bestDate = null;
+  let lastPastUnit = -1;
+
+  C.forEach((unit, ui) => {
+    if (unit.special) return;
+    unit.days.forEach((day) => {
+      const d = parseDay(day.d);
+      if (!d) return;
+      // Track the most recent past-or-today lesson
+      if (d <= today) {
+        lastPastUnit = ui;
+        if (!bestDate || d >= bestDate) {
+          bestDate = d;
+          bestUnit = ui;
+          bestDay = day.n;
+        }
+      }
+      // Exact match for today
+      if (d.getTime() === today.getTime()) {
+        TODAY_UNIT = ui;
+        TODAY_DAY = day.n;
+      }
+    });
+  });
+
+  // Set current unit to the one containing the most recent lesson
+  if (bestUnit >= 0) {
+    // Find the 1-indexed position (skipping specials for numbering)
+    CURRENT_UNIT = bestUnit + 1;
+  }
+})();
+
+// ═══════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════
 
@@ -453,15 +640,17 @@ function renderUnit(unit, idx) {
     statusLabel = 'Upcoming';
   }
 
-  // Display number: curriculum units get numbers, specials get icons
   const displayNum = unit.special ? '✦' : String(uIdx).padStart(2,'0');
 
   const rows = unit.days.map((day, di) => {
-    if (!day.topic) return ''; // skip empty days
-    const rc = day.type === 'test' ? 'is-test' : day.type === 'quiz' ? 'is-quiz' : day.type === 'review' ? 'is-review' : day.type === 'present' ? 'is-present' : '';
+    if (!day.topic) return '';
+    let rc = day.type === 'test' ? 'is-test' : day.type === 'quiz' ? 'is-quiz' : day.type === 'review' ? 'is-review' : day.type === 'present' ? 'is-present' : '';
+    // Highlight today's row
+    if (idx === TODAY_UNIT && day.n === TODAY_DAY) rc += ' is-today';
     const tipDir = di === 0 ? 'below' : '';
+    // Stagger delay
+    const stagger = `style="transition-delay:${di * 0.03}s"`;
 
-    // Topic cell
     let topicHTML = '';
     if (day.type === 'test') {
       topicHTML = `<div class="topic-head"><span class="test-badge">${day.topic}</span>${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>`;
@@ -475,7 +664,6 @@ function renderUnit(unit, idx) {
         titleLink = `<span style="font-size:.84rem;font-weight:500">${day.topic}</span>`;
       }
 
-      // Subtitle note for special units
       let noteHTML = '';
       if (day.topicNote) {
         noteHTML = `<div style="font-size:.7rem;color:var(--t3);font-style:italic;margin-top:.1rem">${day.topicNote}</div>`;
@@ -491,7 +679,7 @@ function renderUnit(unit, idx) {
       topicHTML = `<div class="topic-head">${titleLink}${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>${noteHTML}${completedHTML}`;
     }
 
-    return `<tr class="${rc}"><td class="td-num">${day.n}</td><td class="td-topic">${topicHTML}</td><td>${renderRes(day.res)}</td></tr>`;
+    return `<tr class="${rc}" ${stagger}><td class="td-num">${day.n}</td><td class="td-topic">${topicHTML}</td><td>${renderRes(day.res)}</td></tr>`;
   }).join('');
 
   return `<div class="unit${isCurrent ? ' current' : ''}" data-unit="${uIdx}">
@@ -560,12 +748,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`);
   if (c) c.classList.add('open');
 
-  // Progress: count curriculum units only (not special)
+  // Progress bar
   const curriculumUnits = C.filter(u => !u.special).length;
   const done = Math.max(0, CURRENT_UNIT - 1);
   document.getElementById('pf').style.width = Math.round((done / curriculumUnits) * 100) + '%';
   document.getElementById('pt').textContent = `${done}/${curriculumUnits}`;
 
+  // Today banner
+  if (TODAY_UNIT >= 0 && TODAY_DAY >= 0) {
+    const unit = C[TODAY_UNIT];
+    const day = unit.days.find(d => d.n === TODAY_DAY);
+    if (day && day.topic) {
+      document.getElementById('todayTopic').textContent = day.topic;
+      document.getElementById('todayDate').textContent = day.d;
+      document.getElementById('todayBanner').classList.add('show');
+    }
+  }
+
+  // Scroll reveal
   document.querySelectorAll('.unit').forEach((u, i) => {
     u.style.transitionDelay = `${i * 0.06}s`;
     u.style.transitionDuration = '0.5s';
