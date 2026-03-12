@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -188,6 +189,7 @@ html.dark .ltable tr:hover{background:rgba(255,255,255,.02)}
 .fab:hover{transform:translateY(-2px);box-shadow:var(--fab-sh2)}
 .fab.visible{display:flex}
 
+
 @media(max-width:768px){
   .page{padding:2rem .75rem}header h1{font-size:2rem}
   .top-bar{margin:-2rem -.75rem 1.5rem;padding:.5rem .75rem}
@@ -203,7 +205,7 @@ html.dark .ltable tr:hover{background:rgba(255,255,255,.02)}
   html.dark{--bg:#fff;--white:#fff;--text:#000;--t2:#333;--t3:#666;--t4:#999;
     --bdr:#ccc;--brown:#000;--accent:#a64b2a;--copper:#a0522d;--sage:#698068}
   body{background:#fff!important}
-  #bgBars,.fab,.top-bar,.sbar,.hacts,.dm-toggle,.today-banner{display:none!important}
+  #bgBars,.fab,.top-bar,.sbar,.hacts,.dm-toggle{display:none!important}
   .page{max-width:100%;padding:0}
   .unit{break-inside:avoid;page-break-inside:avoid;margin-bottom:1rem;border:1px solid #ccc;box-shadow:none!important;
     opacity:1!important;transform:none!important}
@@ -283,8 +285,8 @@ html.dark .ltable tr:hover{background:rgba(255,255,255,.02)}
 // ═══════════════════════════════════════════════
 function applyTheme(dark) {
   document.documentElement.classList.toggle('dark', dark);
-  document.getElementById('dmIcon').textContent = dark ? '☾' : '☀︎';
-  document.getElementById('dmLabel').textContent = dark ? 'Dark' : 'Light';
+  document.getElementById('dmIcon').textContent = dark ? '☀︎' : '☾';
+  document.getElementById('dmLabel').textContent = dark ? 'Light' : 'Dark';
   // Update bar chart SVG colour & opacity
   const svg = document.getElementById('bgBars');
   svg.style.color = dark ? '#c08060' : '#a64b2a';
@@ -299,6 +301,9 @@ function toggleDark() {
 (function(){
   let dark = false;
   try {
+    // Clear stale theme preference from older versions
+    const ver = localStorage.getItem('mdm4u-theme-v');
+    if (ver !== '2') { localStorage.removeItem('mdm4u-dark'); localStorage.setItem('mdm4u-theme-v','2'); }
     const saved = localStorage.getItem('mdm4u-dark');
     if (saved !== null) { dark = saved === '1'; }
     else { dark = window.matchMedia('(prefers-color-scheme: dark)').matches; }
@@ -737,8 +742,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const done = Math.max(0, CURRENT_UNIT - 1);
   document.getElementById('pf').style.width = Math.round((done / curriculumUnits) * 100) + '%';
   document.getElementById('pt').textContent = `${done}/${curriculumUnits}`;
-
-  }
 
   // Scroll reveal
   document.querySelectorAll('.unit').forEach((u, i) => {
