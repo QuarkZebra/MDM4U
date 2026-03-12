@@ -748,15 +748,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('pf').style.width = Math.round((done / curriculumUnits) * 100) + '%';
   document.getElementById('pt').textContent = `${done}/${curriculumUnits}`;
 
-  // Today banner
-  if (TODAY_UNIT >= 0 && TODAY_DAY >= 0) {
-    const unit = C[TODAY_UNIT];
-    const day = unit.days.find(d => d.n === TODAY_DAY);
-    if (day && day.topic) {
-      document.getElementById('todayTopic').textContent = day.topic;
-      document.getElementById('todayDate').textContent = day.d;
-      document.getElementById('todayBanner').classList.add('show');
-    }
   }
 
   // Scroll reveal
