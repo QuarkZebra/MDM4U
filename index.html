@@ -575,7 +575,6 @@ let TODAY_DAY = -1;
   let lastPastUnit = -1;
 
   C.forEach((unit, ui) => {
-    if (unit.special) return;
     unit.days.forEach((day) => {
       const d = parseDay(day.d);
       if (!d) return;
