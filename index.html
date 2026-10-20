@@ -1,766 +1,942 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>MDM4U — Data Management</title>
-<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700;800&family=Karla:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   LIGHT THEME (default)
-   ═══════════════════════════════════════════════ */
-:root{
-  --bg:#edf1f7;--white:#ffffff;--hover:#f4f7fb;
-  --brown:#0f172a;--accent:#e8103d;--accent-dim:rgba(232,16,61,.07);--accent-bdr:rgba(232,16,61,.20);
-  --copper:#ff1744;--sage:#1f8a63;--clay:#475569;--muted:#64748b;--muted2:#94a3b8;
-  --text:#111a2e;--t2:#334155;--t3:#64748b;--t4:#9aa8bd;
-  --bdr:#d6dee9;--bdr2:#bfcbdb;
-  --test-bg:rgba(255,23,68,.08);--quiz-bg:rgba(232,16,61,.05);--review-bg:rgba(31,138,99,.06);
-  --present-bg:rgba(71,85,105,.06);
-  --r:8px;--sh:0 1px 3px rgba(0,0,0,.06);--sh2:0 2px 8px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.04);
-  --bar-opacity:.06;--topbar-bg:rgba(237,241,247,.9);
-  --fab-sh:0 4px 20px rgba(232,16,61,0.25);--fab-sh2:0 6px 28px rgba(232,16,61,0.35);
-  --today-bg:rgba(232,16,61,.10);--today-bdr:rgba(232,16,61,.30);
-  --done-tint:rgba(31,138,99,.08);--special-tint:rgba(71,85,105,.08);--test-hover:rgba(255,23,68,.1);
-}
+/* ═══════════ MDM4U — FUNCTIONS ═══════════ */
 
-/* ═══════════════════════════════════════════════
-   DARK THEME
-   ═══════════════════════════════════════════════ */
-html.dark{
-  --bg:#0a0f1c;--white:#111829;--hover:#182033;
-  --brown:#e2e8f0;--accent:#ff3b5f;--accent-dim:rgba(255,59,95,.09);--accent-bdr:rgba(255,59,95,.20);
-  --copper:#ff5c7a;--sage:#5fcf8a;--clay:#94a3b8;--muted:#8491a8;--muted2:#3e4a60;
-  --text:#d4dbe7;--t2:#9ba7bb;--t3:#62708a;--t4:#394560;
-  --bdr:#1f2a40;--bdr2:#2b3850;
-  --test-bg:rgba(255,92,122,.07);--quiz-bg:rgba(255,59,95,.05);--review-bg:rgba(95,207,138,.06);
-  --present-bg:rgba(148,163,184,.06);
-  --sh:0 1px 3px rgba(0,0,0,.2);--sh2:0 2px 8px rgba(0,0,0,.2),0 8px 24px rgba(0,0,0,.15);
-  --bar-opacity:.08;--topbar-bg:rgba(10,15,28,.92);
-  --fab-sh:0 4px 22px rgba(255,59,95,0.45);--fab-sh2:0 6px 30px rgba(255,59,95,0.6);
-  --today-bg:rgba(255,59,95,.12);--today-bdr:rgba(255,59,95,.35);
-  --done-tint:rgba(95,207,138,.08);--special-tint:rgba(148,163,184,.08);--test-hover:rgba(255,92,122,.1);
+:root{
+  --bg:#f6f8fb;--surface:#ffffff;--hover:#f8fafd;
+  --ink:#111a2e;--t2:#334155;--t3:#64748b;--t4:#a3b0c2;
+  --bdr:#e2e8f0;--bdr2:#cbd5e1;
+  --accent:#e8103d;--accent-2:#ff3b5f;
+  --accent-dim:rgba(232,16,61,.07);--accent-bdr:rgba(232,16,61,.28);
+  --ans:#1f8a63;--ans-bg:rgba(31,138,99,.07);--ans-bdr:rgba(31,138,99,.32);
+  --vid:#4553c9;--done:#1f8a63;--skills:#0e7490;
+  --haz-bg:#fff6e5;--haz-fg:#9a5a00;--haz-bdr:rgba(190,120,0,.35);
+  --warn-bg:#fff0f2;--warn-fg:#b32642;--warn-bdr:rgba(204,51,68,.3);
+  --test-bg:rgba(232,16,61,.06);--quiz-bg:rgba(232,16,61,.035);--pquiz-bg:rgba(232,16,61,.035);--review-bg:rgba(31,138,99,.05);
+  --test-fg:#c40d34;--test-dim:rgba(232,16,61,.09);--test-bdr:rgba(232,16,61,.38);
+  --r:10px;--sh:0 1px 2px rgba(15,23,42,.05);--sh2:0 1px 3px rgba(15,23,42,.05),0 6px 20px rgba(15,23,42,.06);
+  --topbar:rgba(246,248,251,.9);
+  --curve:232,16,61;--curve-a:.09;
+  --sans:'Outfit',"Avenir Next","Segoe UI",system-ui,sans-serif;
+  --mono:'IBM Plex Mono',"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#05070c;--surface:#0c111c;--hover:#131a28;
+  --ink:#dde3ee;--t2:#9ba7bb;--t3:#647089;--t4:#3a4459;
+  --bdr:#1a2131;--bdr2:#262f44;
+  --accent:#ff3b5f;--accent-2:#ff6b85;
+  --accent-dim:rgba(255,59,95,.11);--accent-bdr:rgba(255,59,95,.32);
+  --ans:#5fcf8a;--ans-bg:rgba(95,207,138,.09);--ans-bdr:rgba(95,207,138,.35);
+  --vid:#8b9cff;--done:#5fcf8a;--skills:#45c8e0;
+  --haz-bg:#33260f;--haz-fg:#ffc65c;--haz-bdr:rgba(255,198,92,.35);
+  --warn-bg:#351c26;--warn-fg:#ff9fae;--warn-bdr:rgba(255,143,157,.3);
+  --test-bg:rgba(255,59,95,.07);--quiz-bg:rgba(255,59,95,.045);--pquiz-bg:rgba(255,59,95,.045);--review-bg:rgba(95,207,138,.05);
+  --test-fg:#ff5c7a;--test-dim:rgba(255,59,95,.12);--test-bdr:rgba(255,59,95,.42);
+  --sh:0 1px 3px rgba(0,0,0,.4);--sh2:0 2px 8px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  --topbar:rgba(5,7,12,.92);
+  --curve:255,59,95;--curve-a:.12;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Karla',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;
-  background-attachment:fixed;transition:background .3s,color .3s}
+html,body{background:var(--bg)}
+body{font-family:var(--sans);color:var(--ink);line-height:1.6;min-height:100vh;
+  background-image:radial-gradient(1000px 520px at 82% -8%,var(--accent-dim),transparent 70%);
+  background-repeat:no-repeat;background-attachment:fixed;transition:background .3s,color .3s}
 a{color:inherit;text-decoration:none}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;animation:fadein 1.4s both}
+.page{max-width:1080px;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative;z-index:1}
 
-.page{max-width:1050px;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative;z-index:1}
+/* Today hero — click it to jump to that day in the table */
+.hero{background:linear-gradient(135deg,var(--accent-dim),transparent 60%),var(--surface);
+  border:1px solid var(--accent-bdr);border-radius:var(--r);padding:.9rem 1.35rem;margin-bottom:1.4rem;
+  position:relative;overflow:hidden;box-shadow:var(--sh2);cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease}
+@media(hover:hover){.hero:hover{transform:scale(1.013);box-shadow:0 0 0 3px var(--accent-dim),var(--sh2)}}
+.hero:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hero::after{content:"σ";position:absolute;right:1rem;bottom:-1.3rem;font-size:5.5rem;font-weight:700;font-style:italic;
+  color:var(--accent);opacity:.07;font-family:Georgia,serif;pointer-events:none;transition:opacity .2s}
+.hero:hover::after{opacity:.13}
+.hero .eyebrow{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:.5rem}
+.hero .eyebrow .live{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);position:relative}
+.hero .eyebrow .live::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:1.5px solid var(--accent);opacity:0;animation:livepulse 2.6s ease-out infinite}
+@keyframes livepulse{0%{transform:scale(.7);opacity:.7}70%{transform:scale(2.4);opacity:0}100%{transform:scale(2.4);opacity:0}}
+.hero h2{font-size:1.45rem;font-weight:700;letter-spacing:-.02em;margin:.25rem 0 .6rem;text-wrap:balance;transition:color .2s,letter-spacing .2s}
+.hero:hover h2{color:var(--accent);letter-spacing:0}
+.hero .acts{display:flex;flex-wrap:wrap;gap:.5rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:600;padding:.45rem .95rem;border-radius:8px;
+  border:1px solid transparent;cursor:pointer;transition:transform .15s,opacity .15s;font-family:var(--sans)}
+.btn:hover{transform:translateY(-1px)}
+.btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+.btn.pri{background:var(--accent);color:#fff}
+.btn.ansb{background:transparent;border-color:var(--ans-bdr);color:var(--ans)}
+.btn.ghost{background:transparent;border-color:var(--bdr2);color:var(--t2)}
+.btn.dis{background:transparent;border-color:var(--bdr);color:var(--t4);cursor:default}
+.btn.dis:hover{transform:none}
 
-/* Top Bar */
-.top-bar{position:sticky;top:0;z-index:100;background:var(--topbar-bg);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--bdr);margin:-2.5rem -1.5rem 2rem;padding:.6rem 1.5rem;display:flex;align-items:center;gap:.8rem;transition:background .3s}
-.top-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.top-bar{position:sticky;top:0;z-index:100;background:var(--topbar);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bdr);margin:-2.5rem -1.5rem 2rem;padding:.6rem 1.5rem;
+  display:flex;align-items:center;gap:.8rem}
+.top-bar .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
 .ptrack{flex:1;height:3px;background:var(--bdr);border-radius:2px;overflow:hidden}
-.pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--copper));border-radius:2px;transition:width .6s}
-.ptxt{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);font-weight:600;white-space:nowrap}
+.pfill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:2px;transition:width .6s}
+.ptxt{font-family:var(--mono);font-size:.65rem;color:var(--accent);font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 
-/* Header */
-header{margin-bottom:2rem}
-.htop{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
-.chip{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+header{margin-bottom:1.8rem}
+.htop{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.6rem;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
   padding:.22rem .65rem;border:1px solid var(--accent-bdr);border-radius:100px;background:var(--accent-dim);font-weight:600}
-.hacts{display:flex;gap:.4rem}
-.hbtn{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--t3);cursor:pointer;background:var(--white);
-  border:1px solid var(--bdr);padding:.22rem .65rem;border-radius:100px;transition:all .2s}
+.hacts{display:flex;gap:.4rem;position:relative}
+.help{position:absolute;right:0;top:calc(100% + 8px);z-index:150;width:min(320px,calc(100vw - 2rem));background:var(--surface);border:1px solid var(--bdr2);
+  border-radius:var(--r);box-shadow:var(--sh2);padding:.85rem 1rem;display:flex;flex-direction:column;gap:.55rem;font-size:.78rem;color:var(--t2);text-align:left;
+  opacity:0;visibility:hidden;transform:translateY(-6px) scale(.98);transform-origin:top right;transition:opacity .15s,transform .15s,visibility 0s .15s}
+.help.open{opacity:1;visibility:visible;transform:none;transition:opacity .15s,transform .15s}
+.help .ht{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:.1rem}
+.help .hi{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.help .hi .dlink,.help .hi .newp,.help .hi .xans{pointer-events:none}
+.help .hi small{color:var(--t3);font-size:.72rem}
+.help .swatch{width:14px;height:14px;border-radius:4px;background:var(--accent-dim);box-shadow:inset 3px 0 0 var(--accent);flex-shrink:0}
+.hbtn{font-family:var(--mono);font-size:.65rem;color:var(--t3);cursor:pointer;background:var(--surface);
+  border:1px solid var(--bdr);padding:.24rem .7rem;border-radius:100px;transition:all .2s}
 .hbtn:hover{color:var(--t2);border-color:var(--bdr2);background:var(--hover)}
-header h1{font-family:'Bitter',serif;font-size:2.6rem;font-weight:800;letter-spacing:-.02em;line-height:1.1;color:var(--brown)}
-header .sub{color:var(--t3);font-size:.88rem;margin-top:.3rem;font-weight:400}
+.hbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header h1{font-size:2.5rem;font-weight:700;letter-spacing:-.03em;line-height:1.1;color:var(--ink);text-wrap:balance}
+header h1 em{font-style:normal;color:var(--accent)}
+header .sub{color:var(--t3);font-size:.88rem;margin-top:.35rem}
+/* Course essentials: the outline, the homework routine and the calculator list, pinned under the title */
+.ess{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.95rem}
+.ess a{display:inline-flex;align-items:center;gap:.42rem;font-size:.78rem;font-weight:600;padding:.42rem .9rem;border-radius:100px;
+  background:var(--surface);border:1px solid var(--bdr2);color:var(--t2);box-shadow:var(--sh);
+  transition:transform .15s,border-color .15s,color .15s,box-shadow .15s}
+.ess a:hover{transform:translateY(-1px);border-color:var(--accent-bdr);color:var(--accent);box-shadow:var(--sh2)}
+.ess a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ess .ico{width:1.05em;height:1.05em}
 
-/* Dark mode toggle */
-.dm-toggle{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--t3);cursor:pointer;background:var(--white);
-  border:1px solid var(--bdr);padding:.22rem .65rem;border-radius:100px;transition:all .2s;display:flex;align-items:center;gap:.3rem}
-.dm-toggle:hover{color:var(--t2);border-color:var(--bdr2);background:var(--hover)}
-.dm-icon{font-size:.8rem;line-height:1}
-
-/* Search */
-.sbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;padding:.55rem .9rem;background:var(--white);
-  border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s,background .3s}
+.sbar{display:flex;align-items:center;gap:.6rem;margin-bottom:1.2rem;padding:.55rem .9rem;background:var(--surface);
+  border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s}
 .sbar:focus-within{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim)}
 .sbar .si{color:var(--t4);font-size:.9rem}
-.sbar input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Karla',sans-serif;font-size:.85rem}
+.sbar input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-family:var(--sans);font-size:.85rem}
 .sbar input::placeholder{color:var(--t4)}
-.kbd{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--t4);background:var(--bg);border:1px solid var(--bdr);padding:.1rem .35rem;border-radius:4px}
+.sbar .sc{font-family:var(--mono);font-size:.62rem;color:var(--t3);white-space:nowrap}
+.sbar .sc:empty{display:none}
+.nomatch-msg{text-align:center;color:var(--t3);font-size:.85rem;padding:2rem 1rem;border:1px dashed var(--bdr2);border-radius:var(--r);margin-bottom:.55rem}
+.unit.nomatch{display:none}
 
-/* Units */
-.unit{margin-bottom:.5rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--white);box-shadow:var(--sh);
-  overflow:hidden;transition:all .3s ease;opacity:0;transform:translateY(18px)}
-.unit.revealed{opacity:1;transform:translateY(0)}
+.unit{margin-bottom:.55rem;border:1px solid var(--bdr);border-radius:var(--r);background:var(--surface);
+  box-shadow:var(--sh);transition:border-color .25s,box-shadow .25s}
 .unit:hover{border-color:var(--bdr2);box-shadow:var(--sh2)}
 .unit.current{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim),var(--sh2)}
-
-.uhead{display:flex;align-items:center;padding:.85rem 1.1rem;cursor:pointer;user-select:none;transition:background .15s;gap:.75rem}
+.uhead{display:flex;align-items:center;gap:.8rem;padding:.9rem 1.15rem;cursor:pointer;user-select:none;transition:background .15s,box-shadow .2s;width:100%;background:var(--surface);border:none;text-align:left;font-family:inherit;color:inherit;
+  border-radius:var(--r);position:sticky;top:var(--tbh,44px);z-index:5}
+.unit.open .uhead{border-radius:var(--r) var(--r) 0 0}
+.uhead.stuck{box-shadow:inset 0 -1px 0 var(--bdr),0 8px 16px -10px rgba(0,0,0,.3)}
 .uhead:hover{background:var(--hover)}
-.unum{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--t4);font-weight:600;min-width:1.6rem}
+.uhead:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.unum{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--t4);font-weight:600;white-space:nowrap}
 .current .unum{color:var(--accent)}
-.utitle{flex:1;font-size:1rem;font-weight:600;color:var(--text);letter-spacing:-.01em}
-.ucount{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--t4)}
-.utag{font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.06em;text-transform:uppercase;padding:.14rem .48rem;border-radius:100px;font-weight:600}
+.utitle{flex:1;font-size:1.02rem;font-weight:600;letter-spacing:-.01em}
+.urange{font-family:var(--mono);font-size:.6rem;color:var(--t4);white-space:nowrap}
+.umeta{font-family:var(--mono);font-size:.6rem;color:var(--t4);white-space:nowrap}
+.unit.current .umeta{color:var(--t3)}
+.utag{font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;padding:.16rem .5rem;border-radius:100px;font-weight:600;white-space:nowrap}
 .utag.active{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bdr)}
-.utag.done{background:var(--done-tint);color:var(--sage)}
-.utag.upcoming{background:var(--bg);color:var(--t4)}
-.utag.special{background:var(--special-tint);color:var(--clay)}
-.chev{width:16px;height:16px;color:var(--t4);transition:transform .4s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.utag.next{background:var(--bg);color:var(--t2);border:1px solid var(--bdr)}
+.utag.planned{background:var(--bg);color:var(--t4)}
+.utag.done{background:var(--review-bg);color:var(--done)}
+.utag.fresh{background:var(--accent);color:var(--accent-fg,#fff);border:1px solid transparent}
+.chev{width:16px;height:16px;color:var(--t4);transition:transform .35s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
 .unit.open .chev{transform:rotate(180deg);color:var(--t3)}
 .ubody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1)}
 .unit.open .ubody{grid-template-rows:1fr}
-.ubody-inner{overflow:hidden}
-.ucontent{padding:0;border-top:1px solid var(--bdr);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ubody-inner{overflow:hidden;border-radius:0 0 var(--r) var(--r);opacity:0;transform:translateY(-6px);transition:opacity .25s,transform .3s}
+.unit.open .ubody-inner{opacity:1;transform:none;transition-delay:.06s}
+.ucontent{border-top:1px solid var(--bdr);overflow-x:auto;-webkit-overflow-scrolling:touch}
 
-/* Table */
-.ltable{width:100%;border-collapse:collapse;font-size:.84rem}
-.ltable thead tr{background:var(--bg)}
-.ltable th{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--t3);padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap}
-.ltable th:first-child{width:2.5rem;text-align:center}
-.ltable .th-notes{min-width:260px}
-.ltable .th-res{min-width:220px}
-.ltable td{padding:.55rem 1rem;vertical-align:top;border-bottom:1px solid rgba(0,0,0,.03)}
+.ltable{width:100%;border-collapse:collapse;font-size:.88rem}
+.ltable th{font-family:var(--mono);font-size:.6rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--t3);padding:.55rem 1rem;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap;background:var(--bg)}
+.ltable th:first-child{width:2.6rem;text-align:center}
+.th-topic{min-width:250px}.th-extra{min-width:220px}
+.ltable td{padding:.65rem 1rem;vertical-align:top;border-bottom:1px solid var(--bdr)}
 .ltable tr:last-child td{border-bottom:none}
-.ltable tr:hover{background:rgba(0,0,0,.012)}
-html.dark .ltable tr:hover{background:rgba(255,255,255,.02)}
+.ltable tbody tr{transition:background .15s}
+.ltable tbody tr:hover{background:var(--hover)}
 .ltable tr.is-test{background:var(--test-bg)}
-.ltable tr.is-test:hover{background:var(--test-hover)}
 .ltable tr.is-quiz{background:var(--quiz-bg)}
+.ltable tr.is-pquiz{background:var(--pquiz-bg)}
 .ltable tr.is-review{background:var(--review-bg)}
-.ltable tr.is-present{background:var(--present-bg)}
-.ltable tr.is-today{background:var(--today-bg);border-left:3px solid var(--accent)}
+.ltable tr.is-exam{background:var(--test-bg)}
+.ltable tr.is-today td{background:var(--accent-dim)}
+.ltable tr.is-today td:first-child{box-shadow:inset 3px 0 0 var(--accent);border-radius:8px 0 0 8px}
+.ltable tr.is-today td:last-child{border-radius:0 8px 8px 0}
+.td-num{font-family:var(--mono);font-size:.72rem;color:var(--t4);text-align:center;font-variant-numeric:tabular-nums}
+.is-today .td-num{color:var(--accent);font-weight:600}
+.td-date{font-family:var(--mono);font-size:.7rem;color:var(--t2);font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.td-date .dow{display:block;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--t4);line-height:1.3}
+.td-date .dt{display:block}
+.today-pill{display:inline-block;margin-top:.2rem;font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);border:1px solid var(--accent-bdr);background:var(--accent-dim);border-radius:100px;padding:.05rem .4rem;font-weight:600}
+.topic{display:block;font-weight:600;font-size:.98rem;letter-spacing:-.01em}
+/* Assessment flag — top of the cell: "PRACTICE QUIZ: topics", then a gap, then the day's topic */
+.flag{display:flex;width:fit-content;max-width:100%;align-items:baseline;flex-wrap:wrap;gap:.1rem .4rem;
+  padding:.24rem .6rem;border-radius:6px;line-height:1.35;margin-bottom:.45rem;
+  background:var(--accent-dim);border:1px solid var(--accent-bdr);color:var(--accent)}
+.flag .fk{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;white-space:nowrap}
+.flag .fc{font-size:.8rem;font-weight:400}
+.flag.test,.flag.exam{background:var(--test-dim);border-color:var(--test-bdr);color:var(--test-fg)}
+.flag+.lgroup{margin-top:0}
+.hero .flag{margin:.5rem 0 .55rem;padding:.3rem .7rem}
+.hero .flag .fk{font-size:.64rem}.hero .flag .fc{font-size:.95rem}
+.lgroup{display:flex;flex-direction:column;gap:.22rem;margin-top:.25rem}
+.ico{width:.95em;height:.95em;flex-shrink:0;display:inline-block;vertical-align:-.12em;transition:transform .15s}
+.dlink{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;line-height:1.35;transition:opacity .15s}
+.dlink .lt{background:linear-gradient(currentColor,currentColor) no-repeat 0 100%/0 1px;transition:background-size .2s;padding-bottom:1px}
+.dlink:hover{opacity:.85}
+.dlink:hover .lt{background-size:100% 1px}
+.dlink:hover .ico.arrow{transform:translate(1px,-1px)}
+.dlink:hover .ico.play{transform:scale(1.15)}
+.dlink:hover .ico.pencil{transform:rotate(-8deg)}
+.dlink.ans:hover{opacity:.85}
+.lrow{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.newp{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+  color:var(--accent-fg,#fff);background:var(--accent);border-radius:100px;padding:.1rem .45rem;line-height:1.4}
+.xitem{display:flex;flex-wrap:wrap;align-items:center;gap:.15rem .45rem}
+.xans{display:inline-flex;align-items:center;gap:.25rem;font-size:.64rem;font-weight:600;color:var(--ans);padding:.06rem .5rem .06rem .4rem;
+  border:1px solid var(--ans-bdr);border-radius:100px;background:var(--ans-bg);line-height:1.5;transition:transform .15s,box-shadow .15s}
+.xans:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.xans:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dlink:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.dlink.note{color:var(--accent);font-weight:600}
+.dlink.ans{color:var(--ans);font-size:.76rem;font-weight:500}
+.dlink.pend{color:var(--t4);cursor:default;font-size:.76rem}
+.dlink.pend:hover{opacity:1}
+.dlink.pend .lt{background:none}
+.dlink.vid{color:var(--vid);font-size:.78rem}
+.dlink.doc{color:var(--t2);font-size:.78rem}
+.dlink.skills{color:var(--skills);font-size:.78rem;font-weight:600}
+.dlink:hover .ico.layers{transform:translateY(-1px)}
 
-/* Staggered row reveal */
-.ltable tbody tr{opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease}
-.unit.open .ltable tbody tr{opacity:1;transform:translateY(0)}
+/* Hover tooltips */
+.tipwrap{position:relative;display:inline-flex}
+.tip{display:flex;position:absolute;top:calc(100% + 6px);left:0;z-index:30;white-space:nowrap;
+  padding:.28rem .6rem;border-radius:6px;font-size:.64rem;font-weight:500;font-family:var(--sans);
+  pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.12);align-items:center;gap:.35rem;
+  opacity:0;visibility:hidden;transform:translateY(-4px) scale(.96);transform-origin:top left;transition:opacity .12s,transform .12s,visibility 0s .12s}
+.tip.info{background:var(--ink);color:var(--bg)}
+.tip.warn{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-bdr)}
+.tip.hazard{background:var(--haz-bg);color:var(--haz-fg);border:1px solid var(--haz-bdr)}
+.tip.hazard .ico.haz{width:1rem;height:1rem;flex-shrink:0}
+.tip.hazard .tgo{background:var(--haz-fg)}
+.tip .skull{width:1rem;height:1rem;flex-shrink:0}
+.tip.up{top:auto;bottom:calc(100% + 6px);transform:translateY(4px) scale(.96);transform-origin:bottom left}
+.tip .tgo{display:none;font:inherit;font-weight:700;font-size:.7rem;background:var(--warn-fg);color:#fff;border:none;border-radius:6px;padding:.3rem .7rem;cursor:pointer;white-space:nowrap}
+@media(hover:hover){.tipwrap:hover .tip{opacity:1;visibility:visible;transform:none;transition:opacity .12s,transform .12s}}
+.tipwrap:focus-within .tip{opacity:1;visibility:visible;transform:none;transition:opacity .12s,transform .12s}
+/* Armed on touch: the warning becomes a fixed sheet at the bottom with a Continue button */
+.tipwrap.armed .tip{opacity:1;visibility:visible;pointer-events:auto;position:fixed;left:.75rem;right:.75rem;top:auto;bottom:1rem;z-index:400;
+  transform:none;white-space:normal;max-width:none;padding:.75rem .9rem;font-size:.82rem;gap:.6rem;box-shadow:0 12px 32px rgba(0,0,0,.25);border-radius:12px;
+  animation:sheetup .22s cubic-bezier(.2,.7,.2,1) backwards}
+.tipwrap.armed .tip .tgo{display:inline-block;margin-left:auto}
+body.armed .fab{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(14px)}
+@keyframes sheetup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-.td-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--t4);text-align:center;width:2.5rem}
-.td-topic{font-weight:400}
+@keyframes rowflash{0%{background:var(--accent-dim)}100%{background:transparent}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rowin{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.top-bar,header,.hero,.sbar,.unit{animation:rise .45s cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0)*45ms)}
+.unit.open tbody tr{animation:rowin .3s ease-out backwards;animation-delay:calc(min(var(--i,0),16)*22ms + .08s)}
+.unit.open tbody tr.fin{animation:fadein .25s both}
+.unit.open tbody tr.flash{animation:rowflash 1.8s ease-out}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.35s}
 
-/* Link groups */
-.lgroup{display:flex;flex-direction:column;gap:.2rem}
-.dlink{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;transition:opacity .15s;line-height:1.35}
-.dlink:hover{opacity:.7;text-decoration:underline}
-.dlink.note-link{color:var(--accent);font-weight:500}
-.dlink.completed-link{color:var(--sage);font-size:.72rem;font-weight:500}
-.dlink.completed-link.soon{color:var(--t4);cursor:default}
-.dlink.completed-link.soon:hover{opacity:1;text-decoration:none}
-.dlink.soln{color:var(--sage);font-size:.72rem}
-.dlink.vid{color:var(--copper);font-size:.72rem}
-.dlink.res{color:var(--muted);font-size:.76rem}
-.licon{width:11px;height:11px;flex-shrink:0;opacity:.7}
 
-/* Topic head with date */
-.topic-head{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.12rem}
-.lesson-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--t4);white-space:nowrap;margin-left:auto}
-
-/* Test badge */
-.test-badge{display:inline-block;background:var(--copper);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.6rem;
-  letter-spacing:.06em;text-transform:uppercase;padding:.16rem .48rem;border-radius:3px;font-weight:500}
-/* Quiz badge */
-.quiz-badge{display:inline-block;background:var(--accent);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.6rem;
-  letter-spacing:.06em;text-transform:uppercase;padding:.16rem .48rem;border-radius:3px;font-weight:500}
-
-/* Note title tooltip */
-.nt-wrap{position:relative;display:inline}
-.nt-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
-  background:var(--text);color:var(--bg);padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
-  font-family:'Karla',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
-.nt-tip{bottom:calc(100% + 5px)}
-.nt-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--text)}
-.nt-tip.below{bottom:auto;top:calc(100% + 5px)}
-.nt-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--text)}
-.nt-wrap:hover .nt-tip{display:block}
-
-/* Completed note tooltip */
-.cn-wrap{position:relative;display:inline-flex}
-.cn-tip{display:none;position:absolute;left:50%;transform:translateX(-50%);
-  background:var(--text);color:var(--bg);padding:.2rem .55rem;border-radius:5px;font-size:.6rem;
-  font-family:'Karla',sans-serif;white-space:nowrap;z-index:20;pointer-events:none}
-.cn-tip{bottom:calc(100% + 5px)}
-.cn-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--text)}
-.cn-tip.below{bottom:auto;top:calc(100% + 5px)}
-.cn-tip.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:var(--text)}
-.cn-wrap:hover .cn-tip{display:block}
-
-/* Legend & FAB */
-.legend{margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--bdr);display:flex;flex-wrap:wrap;gap:1.5rem;font-size:.73rem;color:var(--t4)}
-.legend-item{display:flex;align-items:center;gap:.4rem}
 .fab{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;background:var(--accent);color:#fff;border:none;border-radius:100px;
-  padding:.55rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:600;cursor:pointer;
-  box-shadow:var(--fab-sh);transition:all .25s;display:none;align-items:center;gap:.35rem}
-.fab:hover{transform:translateY(-2px);box-shadow:var(--fab-sh2)}
-.fab.visible{display:flex}
-
+  padding:.55rem 1rem;font-family:var(--mono);font-size:.68rem;font-weight:600;cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;gap:.35rem;
+  opacity:0;visibility:hidden;transform:translateY(14px);pointer-events:none;transition:transform .3s cubic-bezier(.2,.7,.2,1),opacity .25s,visibility 0s .3s}
+.fab.visible{opacity:1;visibility:visible;transform:none;pointer-events:auto;transition:transform .3s cubic-bezier(.2,.7,.2,1),opacity .25s}
+.fab.visible:hover{transform:translateY(-2px)}
+.fab:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
 
 @media(max-width:768px){
-  .page{padding:2rem .75rem}header h1{font-size:2rem}
+  .page{padding:2rem .75rem}header h1{font-size:1.9rem}
   .top-bar{margin:-2rem -.75rem 1.5rem;padding:.5rem .75rem}
-  .ltable{min-width:560px}
-  .fab{bottom:1rem;right:1rem}.hacts .hbtn{display:none}
+  #bg{opacity:.55}
+  .urange{display:none}
+  .fab{bottom:1rem;right:1rem}
+  .uhead{padding:.8rem .9rem;gap:.5rem;flex-wrap:wrap}
+  .umeta{flex-basis:100%;order:10;margin-top:-.2rem}
+  .ucontent{overflow:visible}
+  .ltable,.ltable tbody{display:block}
+  .ltable thead{display:none}
+  .ltable tr{display:grid;grid-template-columns:auto 1fr;column-gap:.55rem;row-gap:.1rem;align-items:center;padding:.85rem .9rem .95rem;border-bottom:1px solid var(--bdr)}
+  .ltable tr:last-child{border-bottom:none}
+  .ltable td{display:block;padding:0;border:none}
+  .td-num{grid-row:1;grid-column:1;width:auto;text-align:left;font-size:.62rem;padding:.08rem .5rem;border:1px solid var(--bdr);border-radius:100px;color:var(--t3)}
+  .td-num::before{content:"Day "}
+  .td-date{grid-row:1;grid-column:2;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+  .td-date br{display:none}
+  .td-date .dow,.td-date .dt{display:inline;font-size:.7rem;color:var(--t2);text-transform:none;letter-spacing:0}
+  .td-date .dow::after{content:", "}
+  .today-pill{margin:0 0 0 .15rem}
+  .td-topic{grid-column:1/-1;margin-top:.4rem}
+  .td-extra{grid-column:1/-1;margin-top:.5rem;padding-top:.5rem;border-top:1px dashed var(--bdr)}
+  .td-extra.empty{display:none}
+  .ltable tr.is-today{background:var(--accent-dim);box-shadow:inset 3px 0 0 var(--accent)}
+  .ltable tr.is-today td,.ltable tr.is-today td:first-child,.ltable tr.is-today td:last-child{background:none;box-shadow:none;border-radius:0}
+  .ltable tr.is-today .td-num{border-color:var(--accent-bdr);color:var(--accent)}
+  .dlink{font-size:.86rem}.dlink.ans,.dlink.pend{font-size:.8rem}.dlink.vid,.dlink.doc,.dlink.eqao{font-size:.82rem}
+  .xans{font-size:.68rem}
+  .hero .acts .btn{flex:1 1 auto;justify-content:center}
+  .ess a{flex:1 1 auto;justify-content:center}
 }
-
-/* ═══════════════════════════════════════════════
-   PRINT STYLESHEET
-   ═══════════════════════════════════════════════ */
-@media print{
-  *{color-adjust:exact;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  html.dark{--bg:#fff;--white:#fff;--text:#000;--t2:#333;--t3:#666;--t4:#999;
-    --bdr:#ccc;--brown:#000;--accent:#e8103d;--copper:#ff1744;--sage:#1f8a63}
-  body{background:#fff!important}
-  #bgBars,.fab,.top-bar,.sbar,.hacts,.dm-toggle{display:none!important}
-  .page{max-width:100%;padding:0}
-  .unit{break-inside:avoid;page-break-inside:avoid;margin-bottom:1rem;border:1px solid #ccc;box-shadow:none!important;
-    opacity:1!important;transform:none!important}
-  .unit,.unit.open{display:block}
-  .ubody{display:block!important;grid-template-rows:1fr!important}
-  .ubody-inner{overflow:visible!important}
-  .unit.current{border-color:#ccc;box-shadow:none!important}
-  .ltable tbody tr{opacity:1!important;transform:none!important}
-  .chev{display:none}
-  .legend{page-break-before:avoid}
-  header h1{font-size:2rem}
-  a{text-decoration:none!important}
-  .dlink:hover{text-decoration:none!important}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
 }
 </style>
 </head>
 <body>
-<!-- Bar chart background -->
-<svg id="bgBars" style="position:fixed;bottom:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;transition:opacity .3s" preserveAspectRatio="xMidYMax slice" viewBox="0 0 240 70">
-<rect x="4" y="52" width="6.5" height="18" rx="1" fill="currentColor"/><rect x="13.2" y="38" width="6.5" height="32" rx="1" fill="currentColor"/>
-<rect x="22.4" y="25" width="6.5" height="45" rx="1" fill="currentColor"/><rect x="31.6" y="42" width="6.5" height="28" rx="1" fill="currentColor"/>
-<rect x="40.8" y="18" width="6.5" height="52" rx="1" fill="currentColor"/><rect x="50" y="32" width="6.5" height="38" rx="1" fill="currentColor"/>
-<rect x="59.2" y="8" width="6.5" height="62" rx="1" fill="currentColor"/><rect x="68.4" y="45" width="6.5" height="25" rx="1" fill="currentColor"/>
-<rect x="77.6" y="22" width="6.5" height="48" rx="1" fill="currentColor"/><rect x="86.8" y="35" width="6.5" height="35" rx="1" fill="currentColor"/>
-<rect x="96" y="15" width="6.5" height="55" rx="1" fill="currentColor"/><rect x="105.2" y="48" width="6.5" height="22" rx="1" fill="currentColor"/>
-<rect x="114.4" y="28" width="6.5" height="42" rx="1" fill="currentColor"/><rect x="123.6" y="12" width="6.5" height="58" rx="1" fill="currentColor"/>
-<rect x="132.8" y="40" width="6.5" height="30" rx="1" fill="currentColor"/><rect x="142" y="20" width="6.5" height="50" rx="1" fill="currentColor"/>
-<rect x="151.2" y="50" width="6.5" height="20" rx="1" fill="currentColor"/><rect x="160.4" y="26" width="6.5" height="44" rx="1" fill="currentColor"/>
-<rect x="169.6" y="34" width="6.5" height="36" rx="1" fill="currentColor"/><rect x="178.8" y="8" width="6.5" height="62" rx="1" fill="currentColor"/>
-<rect x="188" y="43" width="6.5" height="27" rx="1" fill="currentColor"/><rect x="197.2" y="30" width="6.5" height="40" rx="1" fill="currentColor"/>
-<rect x="206.4" y="17" width="6.5" height="53" rx="1" fill="currentColor"/><rect x="215.6" y="37" width="6.5" height="33" rx="1" fill="currentColor"/>
-<rect x="224.8" y="23" width="6.5" height="47" rx="1" fill="currentColor"/>
-</svg>
+<canvas id="bg" aria-hidden="true"></canvas>
 <div class="page">
-
-<div class="top-bar">
-  <span class="lbl">Course</span>
-  <div class="ptrack"><div class="pfill" id="pf"></div></div>
-  <span class="ptxt" id="pt"></span>
-</div>
-
-<header>
-  <div class="htop">
-    <span class="chip">MDM4U</span>
-    <div class="hacts">
-      <button class="dm-toggle" id="dmBtn" onclick="toggleDark()">
-        <span class="dm-icon" id="dmIcon">☀︎</span> <span id="dmLabel">Light</span>
-      </button>
-      <button class="hbtn" onclick="toggleAll()" id="expBtn">Expand All</button>
-    </div>
+  <div class="top-bar" style="--i:0">
+    <span class="lbl">Course</span>
+    <div class="ptrack"><div class="pfill" id="pf"></div></div>
+    <span class="ptxt" id="pt"></span>
   </div>
-  <h1>Data Management</h1>
-  <div class="sub">Grade 12 · University Preparation</div>
-</header>
 
-<div class="sbar">
-  <span class="si">⌕</span>
-  <input type="text" placeholder="Filter lessons..." id="si" oninput="filterL(this.value)">
-  <span class="kbd">⌘K</span>
-</div>
-
-<div id="units"></div>
-
-<div class="legend">
-  <div class="legend-item"><span class="dlink note-link" style="pointer-events:none;font-size:.72rem">↗ Link</span><span>Blank note &amp; homework</span></div>
-  <div class="legend-item"><span class="dlink completed-link" style="pointer-events:none;font-size:.72rem">✓ Completed</span><span>Completed note</span></div>
-  <div class="legend-item"><span class="dlink soln" style="pointer-events:none">✓ Soln</span><span>Solution</span></div>
-  <div class="legend-item"><span class="dlink vid" style="pointer-events:none">▶ Video</span><span>Video</span></div>
-</div>
-</div>
-
-<button class="fab" id="fab" onclick="jumpC()">↑ Current Unit</button>
-
-<script>
-// ═══════════════════════════════════════════════
-// DARK MODE
-// ═══════════════════════════════════════════════
-function applyTheme(dark) {
-  document.documentElement.classList.toggle('dark', dark);
-  document.getElementById('dmIcon').textContent = dark ? '☀︎' : '☾';
-  document.getElementById('dmLabel').textContent = dark ? 'Light' : 'Dark';
-  // Update bar chart SVG colour & opacity
-  const svg = document.getElementById('bgBars');
-  svg.style.color = dark ? '#ff3b5f' : '#ff1744';
-  svg.style.opacity = dark ? '.08' : '.06';
-}
-function toggleDark() {
-  const going = !document.documentElement.classList.contains('dark');
-  applyTheme(going);
-  try { localStorage.setItem('mdm4u-dark', going ? '1' : '0'); } catch(e){}
-}
-// Init: check saved preference, then system preference
-(function(){
-  let dark = false;
-  try {
-    // Clear stale theme preference from older versions
-    const ver = localStorage.getItem('mdm4u-theme-v');
-    if (ver !== '2') { localStorage.removeItem('mdm4u-dark'); localStorage.setItem('mdm4u-theme-v','2'); }
-    const saved = localStorage.getItem('mdm4u-dark');
-    if (saved !== null) { dark = saved === '1'; }
-    else { dark = window.matchMedia('(prefers-color-scheme: dark)').matches; }
-  } catch(e) {
-    dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  }
-  applyTheme(dark);
-  // Listen for system changes (only if no manual override)
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    try { if (localStorage.getItem('mdm4u-dark') !== null) return; } catch(ex){}
-    applyTheme(e.matches);
-  });
-})();
-
-// ═══════════════════════════════════════════════
-// SEASONAL ACCENT (subtle hue shift)
-// Sep-Nov: warm amber · Dec-Feb: cool sienna · Mar-May: earthy terracotta · Jun-Aug: golden
-// ═══════════════════════════════════════════════
-(function(){
-  const m = new Date().getMonth(); // 0-11
-  let hueShift = '0deg';
-  if (m >= 8 && m <= 10) hueShift = '-8deg';      // Sep-Nov: slightly cooler
-  else if (m >= 11 || m <= 1) hueShift = '5deg';   // Dec-Feb: slightly warmer
-  else if (m >= 2 && m <= 4) hueShift = '0deg';    // Mar-May: base
-  else hueShift = '-5deg';                          // Jun-Aug: slightly golden
-  if (hueShift !== '0deg') document.documentElement.style.filter = `hue-rotate(${hueShift})`;
-})();
-
-// ═══════════════════════════════════════════════
-// ICONS
-// ═══════════════════════════════════════════════
-const IC = {
-  doc: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 4h5v2H4zm0 3h8v2H4zm0 3h6v2H4zm9-9H3a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V5l-4-4z"/></svg>`,
-  vid: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M6 3l7 5-7 5V3z"/></svg>`,
-  soln: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M6.5 12L2 7.5l1.4-1.4L6.5 9.2l6.1-6.1L14 4.5z"/></svg>`,
-  link: `<svg class="licon" viewBox="0 0 16 16" fill="currentColor"><path d="M4.7 8.7l1.4-1.4 2.6 2.6-1.4 1.4A2 2 0 014.7 8.7zm6.6-6.6A2 2 0 008.7 4.7L7.3 6.1l2.6 2.6 1.4-1.4a2 2 0 000-2.6zM3.3 11.3a3 3 0 004.2 0l1.4-1.4-1.4-1.4-1.4 1.4a1 1 0 01-1.4-1.4l1.4-1.4-1.4-1.4-1.4 1.4a3 3 0 000 4.2z"/></svg>`,
-};
-
-function mkLink(text, href, type) {
-  if (!href) return `<span style="font-size:.76rem;color:var(--t2)">${text}</span>`;
-  let cls = 'dlink res', icon = IC.link;
-  if (type === 'vid') { cls = 'dlink vid'; icon = IC.vid; }
-  else if (type === 'soln') { cls = 'dlink soln'; icon = IC.soln; }
-  else if (type === 'doc') { cls = 'dlink res'; icon = IC.doc; }
-  return `<a href="${href}" target="_blank" class="${cls}">${icon}${text}</a>`;
-}
-
-// ═══════════════════════════════════════════════
-// DATE PARSING — for auto-detection
-// Parses "Mon Feb 2" style dates into a Date object
-// Uses the YEAR from the course data context (semester start)
-// ═══════════════════════════════════════════════
-const COURSE_YEAR = 2026; // ← Change this to match your school year
-function parseDay(dStr) {
-  if (!dStr) return null;
-  const parts = dStr.replace(/,/g,'').split(/\s+/);
-  if (parts.length < 3) return null;
-  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-  const mon = months[parts[1]];
-  if (mon === undefined) return null;
-  const day = parseInt(parts[2]);
-  if (isNaN(day)) return null;
-  // Handle semester 2 dates that wrap into January (e.g. Carnival report writing)
-  let year = COURSE_YEAR;
-  if (mon <= 1) {
-    // Jan/Feb could be start of course OR next year for carnival
-    // If the first unit starts in Feb, keep same year; otherwise bump
-  }
-  return new Date(year, mon, day);
-}
-
-// ═══════════════════════════════════════════════
-// COURSE DATA
-// ═══════════════════════════════════════════════
-const C = [
-{id:"u1",title:"Organizing Data",days:[
-{n:1,d:"Mon Feb 2",topic:"Intro to Data Management",blank:"https://drive.google.com/file/d/1oTWw1i4vEaWyXCEQ2t6Nd01YkV8k18oM/view",
-  res:[{t:"Course Outline",h:"https://docs.google.com/document/d/1uIehMAgiAb6qhVIGJkKwf6OGowUEbWdfixQM5roZ0Ns/edit"},{t:"Prerequisite Skills (math)",h:"https://drive.google.com/file/d/1PAR-d_Bu6vr6R-a2C36LH05VxAYzS96I/view"},{t:"Textbook Ch 5",h:"https://drive.google.com/file/d/1AVBarE8uRnuNqf71qhU0K5QalYIqi7xK/view",y:"doc"},{t:"Answers",h:"https://drive.google.com/file/d/11MLpgJIK_hd_FZXHINo92uHU0TC-GNLm/view",y:"soln"}]},
-{n:2,d:"Tues Feb 3",topic:"Types of Data",blank:"https://drive.google.com/file/d/1Z1EJDQvesbrn0BfkRKUZ1aCMzzdAj-rn/view",filled:"https://drive.google.com/file/d/1Z7PScWlBDCXBCpaWSj8SNr-e9U1fdncU/view",
-  res:[{t:"Spurious Correlations",h:"https://www.tylervigen.com/spurious-correlations"}]},
-{n:3,d:"Weds Feb 4",topic:"Sampling Methods",blank:"https://drive.google.com/file/d/1ZFM00nEm9TW7J167s8d1j9s7zzNfjVlE/view",filled:"https://drive.google.com/file/d/1ZOvMKM5eg6Z26Cib9UM6uUGMyZga1PQC/view",
-  res:[{t:"Sampling Questions",h:"https://docs.google.com/document/d/1RcVYnBExES2AdvDfuhiZym0n9PJCbOoKO9Qzu8HGvVc/edit",y:"doc"},{t:"SOLN",h:"https://docs.google.com/document/d/117OkGGaecyqEZ29V87av9mx6b2ICqJdtOQmXylOEZuY/edit",y:"soln"}]},
-{n:4,d:"Thurs Feb 5",topic:"Collecting Data",blank:"https://drive.google.com/file/d/1ZgPBiIQuEnlyzXf71x9jSh6JEcZrBzXq/view",filled:"https://drive.google.com/file/d/1zV4YkehHK64SzRvDWKhrsIBf1TiglinA/view",
-  res:[{t:"Why Most Published Research is Wrong",h:"https://www.youtube.com/watch?v=42QuXLucH3Q",y:"vid"}]},
-{n:5,d:"Fri Feb 6",topic:"Creating Surveys & Presenting Data",blank:"https://drive.google.com/file/d/11HQQf_8LV3Iqj_lZ2CD11T0iK-vNpiu-/view",filled:"https://drive.google.com/file/d/1vlscTbJTLWkxyxROrHq2DrUZ47M8RTuh/view",
-  res:[{t:"7 Tips for Good Survey Questions",h:"https://www.youtube.com/watch?v=Iq_fhTuY1hw",y:"vid"}]},
-{n:6,d:"Mon Feb 9",topic:"Stats Project Intro",blank:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit",
-  res:[{t:"Developing Good Research Questions",h:"https://www.youtube.com/watch?v=3YHv3vFJMG0",y:"vid"},{t:"How to Develop Strong Research Questions",h:"https://www.youtube.com/watch?v=71-GucBaM8U",y:"vid"}]},
-{n:7,d:"Tues Feb 10",topic:"Surveys Assignment — Create Form",blank:"https://docs.google.com/document/d/1DKLoQP8_G2sdn50PJWZcgrshwg8peEwl5EkVhhykhUk/edit",
-  res:[{t:"Share Your Survey Here",h:"https://docs.google.com/spreadsheets/d/12Aeshg38phAg6M24EFENtw4lxJAkSPJ2zDbzL9OSOz0/edit"}]},
-{n:8,d:"Weds Feb 11",topic:"Bias",blank:"https://drive.google.com/file/d/1zRIxYNMaOQz8Y4FmJ-w1WgKoxaTzy60l/view",filled:"https://drive.google.com/file/d/1SB65LLJSyg1q_yj8xGt4oQ6XfS-DxgAB/view",
-  res:[{t:"Types of Bias (Broken Down More)",h:"https://www.youtube.com/watch?v=CMa-Y5KSz1A",y:"vid"},{t:"Every Bias Explained in 8 Minutes",h:"https://www.youtube.com/watch?v=8SbV1jN12RY",y:"vid"}]},
-{n:9,d:"Thurs Feb 12",topic:"Big Data Debate",blank:"https://docs.google.com/presentation/d/1Q7aQpqyWvZMujq2QhOhGzCOAZTCW-WWiYE_j3_DN05U/edit",
-  res:[{t:"Ethical Challenges of Big Data",h:"https://pmc.ncbi.nlm.nih.gov/articles/PMC7819582/"},{t:"Google Trends",h:"https://trends.google.com/trends/"}]},
-{n:10,d:"Tues Feb 17",topic:"Surveys And Results Assignment",
-  res:[{t:"Complete All the Surveys",h:"https://docs.google.com/spreadsheets/d/12Aeshg38phAg6M24EFENtw4lxJAkSPJ2zDbzL9OSOz0/edit"}]},
-{n:11,d:"Weds Feb 18",topic:"Validity",blank:"https://drive.google.com/file/d/11oY8J3V0f44kAU6viYf1ANDBqmjJ-rL7/view",filled:"https://docs.google.com/document/d/1jl2-RBVIgGBV-GR2ViG4e18qf7QBw-F07GGmJefRrc8/edit",
-  res:[{t:"Logic Questions",h:"https://docs.google.com/document/d/1rOj2Dz44CDmKuqz56uHXBNLC_rzTNWufmCLtvRaHUo4/edit",y:"doc"},{t:"SOLN",h:"https://docs.google.com/document/d/1SLv4gKG3sfPkMzJcfrgwtTBosXyUGPjq3B4oK66OFmA/edit",y:"soln"}]},
-{n:12,d:"Thurs Feb 19",topic:"Review",blank:"https://docs.google.com/document/d/1xkj7BrfYn5gD5jKQVpk-Vf1Jjh4kVKfpawIceul49xg/edit",filled:"https://docs.google.com/document/d/1y3oYbuO5P_rbEMN09jmlmtOpkJ_uGwKWW624dq9sK28/edit",type:"review",
-  res:[]},
-{n:13,d:"Fri Feb 20",topic:"Test",type:"test",res:[]},
-]},
-
-{id:"u2",title:"One Variable Statistics",days:[
-{n:1,d:"Mon Feb 23",topic:"Sigma Notation",blank:"https://drive.google.com/file/d/11tHLXazNxl-DKH7BAPVtzbDDAbWXSTOw/view",filled:"https://drive.google.com/file/d/1T2ltWoIptW8DXS9QtqLF0SI35cf2llW7/view",
-  res:[{t:"Textbook Ch 6",h:"https://drive.google.com/file/d/1qEnBmoRPvm51DHHn3xdsZGFBVDOiklNt/view",y:"doc"}]},
-{n:2,d:"Tues Feb 24",topic:"Measures of Central Tendency",blank:"https://drive.google.com/file/d/1286cB-JgUZ56CrAlcRs8Wmwjo5t1tKMe/view",filled:"https://drive.google.com/file/d/1BzHaTl5MDWJgJ1RBfBX4xYr26yMNqtxJ/view",
-  res:[{t:"Measures of Central Tendency Vid",h:"https://www.youtube.com/watch?v=AdH5vfobH5E",y:"vid"}]},
-{n:3,d:"Weds Feb 25",topic:"Measures of Spread",blank:"https://drive.google.com/file/d/129erBemNfcJk_h2yZ25f5k_vYHOBmvuR/view",filled:"https://drive.google.com/file/d/12D9llGdqvH2ZoXXJmDVS06dE2_15KIUh/view",
-  res:[{t:"Practice Questions",h:"https://drive.google.com/file/d/1-3kRA4XRReJuLr7OyuOnreUf_opTiqeu/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1VB1CkUFuYIO1l8XyEALVyngmyNPBqCyM/view",y:"soln"}]},
-{n:4,d:"Thurs Feb 26",topic:"Work Period",
-  res:[{t:"Statistics Project",h:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit"}]},
-{n:5,d:"Fri Feb 27",topic:"Standard Deviation",blank:"https://drive.google.com/file/d/12E10OBxYIyU0jJdI2YK-kdaV8rcvruPx/view",filled:"https://drive.google.com/file/d/1UnbhMl-gSOtGkQT5E51iDf7XJseJdoDj/view",
-  res:[{t:"Standard Deviation Vid",h:"https://www.youtube.com/watch?v=MRqtXL2WX2M",y:"vid"}]},
-{n:6,d:"Mon Mar 2",topic:"z-Scores",blank:"https://drive.google.com/file/d/1VOu3HKC_ioPXKnIxfJqRG-SoWf0JB7Fo/view",filled:"https://drive.google.com/file/d/1VQx7RGc1MzRiV1d0HLjviAsHQI8DpaBS/view",
-  res:[{t:"Talent Show Example on Sheets",h:"https://docs.google.com/spreadsheets/d/1gYgw1JAdi6lacoVyOuGLVQeLs3hi80SiWnQEsDBnGjU/edit"}]},
-{n:7,d:"Tues Mar 3",topic:"Height Assignment",blank:"https://docs.google.com/document/d/18eoJ9_bAKSKPKSYBu4YNaU_In1OwG8idxKz2sXe3dGk/edit",
-  res:[{t:"Using Sheets & Desmos Vid",h:"https://www.youtube.com/watch?v=w7KHqf8FHwE",y:"vid"}]},
-{n:8,d:"Weds Mar 4",topic:"Review",blank:"https://drive.google.com/file/d/1vHWOQc8P0hsm2FFq5Gh57yFbq3syRcaF/view",type:"review",
-  res:[{t:"Formula Sheet (Given on Test)",h:"https://drive.google.com/file/d/1obAZReUX3zkxKqZbM4BPyAPfhcUzUYYy/view",y:"doc"}]},
-{n:9,d:"Thurs Mar 5",topic:"Test",type:"test",res:[]},
-]},
-
-{id:"u3",title:"Two Variable Statistics",days:[
-{n:1,d:"Fri Mar 6",topic:"Scatter Plots & Correlation",blank:"https://drive.google.com/file/d/1XKVNhFLSCezLTz95Ze1urC4pt-Oq9y7R/view",filled:"https://drive.google.com/file/d/1-DVIgoe2yOM4HQ3tMSJYiGwIrQdOr0m6/view",
-  res:[{t:"Scatter Plots, Association, and Correlation",h:"https://www.youtube.com/watch?v=AxY7nTkgR6M",y:"vid"}]},
-{n:2,d:"Mon Mar 9",topic:"Calculating r and r²",blank:"https://drive.google.com/file/d/1rhSBCuI0XPO2sE4KHU_mZUVP4JKseKzs/view",filled:"https://drive.google.com/file/d/1-7uUPRdYlGv1SzFd4NIYCRF1Xm_DwdHW/view",
-  res:[{t:"Yield vs Temp on Desmos",h:"https://www.desmos.com/calculator/uwfrtx02ev"},{t:"Yield vs Temp on Sheets",h:"https://docs.google.com/spreadsheets/d/1sBb5vLtYKlB8HOeunjcAMdW6nbtixuqrvliZ5RNpzVo/edit"},{t:"Extra Correlation Questions",h:"https://drive.google.com/file/d/1SgNyplNjnBNAeoVyNFQSBx7q28j68ny2/view",y:"doc"}]},
-{n:3,d:"Tues Mar 10",topic:"Linear Regression",blank:"https://drive.google.com/file/d/1XepAKbQx6yyNbPECFNkpxYTuji7E21iu/view",filled:"https://drive.google.com/file/d/1IRBTCd13p_Xb70WUyo0rBU2jsppVjgJR/view",
-  res:[{t:"Linear Regression Clearly Explained",h:"https://www.youtube.com/watch?v=7ArmBVF2dCs",y:"vid"}]},
-{n:4,d:"Weds Mar 11",topic:"Statistics Project Introduction",blank:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit",
-  res:[{t:"Written Report Rubric",h:"https://drive.google.com/file/d/1LuF0OTy7c9OjBsUBZPl5EfhglaELvANS/view",y:"doc"}]},
-{n:5,d:"Thurs Mar 12",topic:"Cause & Effect",blank:"https://drive.google.com/file/d/1YgpjwgFG3SLWhKnOPFw8GbxCunB-ep4m/view",filledSoon:true,filled:"https://drive.google.com/file/d/1Ys4RexN2CzzytaqZm6Eq1KfS6C7dF_aH/view",
-  res:[{t:"Simpsons Clip",h:"https://www.youtube.com/watch?v=EiUcY4dECqA",y:"vid"}]},
-{n:6,d:"Fri Mar 13",topic:"Residuals",blank:"https://docs.google.com/document/d/1_2XMQjXRuWzpE4my4B9r16BfoGPurjIsz78xu-YafGk/edit",
-  res:[{t:"More on Residuals",h:"https://www.statology.org/residuals/"},{t:"Learn About Plotting Residuals",h:"https://docs.google.com/spreadsheets/d/1A4C__ZKjlRmJf_nafw9at-L78G_-mU-ugxU55pCp2vk/copy"},{t:"SOLN",h:"https://docs.google.com/spreadsheets/d/1MDCBmaLE4-qO5Yhl8rgrNg8Dh8LVUnX8bCBYmx_4L1Q/edit",y:"soln"},{t:"Data for Today's Note",h:"https://docs.google.com/spreadsheets/d/168IG5s-ltJe4Gq1g_RO82oiGFlgUHcOtW8z_jOgJLQk/copy"},{t:"SOLN",h:"https://docs.google.com/spreadsheets/d/19vPMAlsdtnEIdzWTkLj60sd4IhyB2w_QHVTNNnazEqw/edit",y:"soln"}]},
-{n:7,d:"Mon Mar 23",topic:"Assignment (A Big Relationship)",res:[]},
-{n:8,d:"Tues Mar 24",topic:"Review",blank:"https://drive.google.com/file/d/1rgpa3mSss_GzELSaLpU2dATKH8vM9K8z/view",filled:"https://drive.google.com/file/d/1AAgHVihQi44H5s7xMo3uGjxTXUbHZCdV/view",type:"review",
-  res:[{t:"Extra Practice",h:"https://docs.google.com/document/d/1FLHAIs0GxpC1qVUT50yt3qUDySx4VuVh85TW2OlpXr8/edit",y:"doc"},{t:"SOLN",h:"https://docs.google.com/document/d/1Qhc8_KuJQHdrBM-9ZY0D5u52on7pLpN_v8vrr6ylILk/edit",y:"soln"},{t:"Formula Sheet Given on Test",h:"https://drive.google.com/file/d/1pMXo1Zp5yU6UXalBejDMLcfRxJuECxOo/view",y:"doc"}]},
-{n:9,d:"Weds Mar 25",topic:"Test 3",type:"test",res:[]},
-]},
-
-{id:"sp",title:"Statistics Project",special:true,days:[
-{n:1,d:"",topic:"Research Proposal",topicNote:"To be completed during unit 2",blank:"https://docs.google.com/document/d/1GluNJkbl3o4LQpxW5Iy41B80fDJ3B21Fb5LOpfUKOBA/edit",
-  res:[{t:"UNESCO Database",h:"http://data.uis.unesco.org/"},{t:"Statistics Canada",h:"https://www.statcan.gc.ca/en/start"}]},
-{n:2,d:"",topic:"Introduction & Method",topicNote:"To be completed during unit 3",res:[]},
-{n:3,d:"Thurs Mar 26",topic:"Data Collection and Analysis",res:[]},
-{n:4,d:"Fri Mar 27",topic:"Data Collection and Analysis",res:[]},
-{n:5,d:"Mon Mar 30",topic:"Peer Review / Feedback",res:[]},
-{n:6,d:"Tues Mar 31",topic:"Report Writing",res:[]},
-{n:7,d:"",topic:"Presentation",topicNote:"To be completed during units 5 & 6",
-  res:[{t:"Presentation Note/Description",h:"https://docs.google.com/document/d/166XN-NycsX7EhLASyh2XzySn9QaBhtJB1ITguzTlB_8/edit"},{t:"Presentation Rubric",h:"https://docs.google.com/document/d/1cNWB6_8IXLBKj2WTNavUh-RUTCsHAg4sTeXVYqQ--9Y/edit",y:"doc"}]},
-]},
-
-{id:"u4",title:"Basic Probability",days:[
-{n:1,d:"Weds Apr 1",topic:"Intro to Probability",blank:"https://drive.google.com/file/d/1cX0kRD4W6EiFv54Vqa99le3oSQYxMLWz/view",filled:"https://drive.google.com/file/d/1EG8xSoOQ7jXV-zPfZUdL2Jzax9wuytF4/view",
-  res:[{t:"Basic Probability Vid",h:"https://www.youtube.com/watch?v=KzfWUEJjG18",y:"vid"}]},
-{n:2,d:"Thurs Apr 2",topic:"Theoretical Probability",blank:"https://drive.google.com/file/d/1cgFX47RKU9tqdGylktSPkZqAdWjC_AUk/view",filled:"https://drive.google.com/file/d/10FyWW2dVa434dWw4jCz8n6DOSiu4XYef/view",
-  res:[{t:"The Last Banana: Theoretical Probability",h:"https://www.youtube.com/watch?v=Kgudt4PXs28",y:"vid"}]},
-{n:3,d:"Tues Apr 7",topic:"Experimental Probability",blank:"https://drive.google.com/file/d/1dPQsYIb9NpTBqTTR8WsOMoTzC4St6HHo/view",filled:"https://drive.google.com/file/d/1dbOpqyTFBc-eXiAcViNJEhFXDk2bicLv/view",
-  res:[{t:"Spinner Simulation",h:"https://www.nctm.org/adjustablespinner/"}]},
-{n:4,d:"Weds Apr 8",topic:"Mutually Exclusive Events",blank:"https://drive.google.com/file/d/13fJPYpmj4mS6QbwYaUPuM7y3Im7gwjEo/view",filled:"https://drive.google.com/file/d/1S9StqNE1Lp1y4CxkrdB_ZEhbi2HiuoK1/view",
-  res:[{t:"Mutually Exclusive with Venn Diagrams",h:"https://www.youtube.com/watch?v=X6usGgwXFyU",y:"vid"},{t:"Mutually Exclusive Worksheet",h:"https://drive.google.com/file/d/1dnWKaI4itaX5LtYtxMoAHN8ftRaaIKLl/view",y:"doc"}]},
-{n:5,d:"Thurs Apr 9",topic:"Independent & Dependent Events",blank:"https://drive.google.com/file/d/1e5moe7COIYVVfSCqM-y5a_NeUbNKismM/view",filled:"https://drive.google.com/file/d/1awQu7E471mbsY3sjIEQ8LWYIQhckNYAb/view",
-  res:[{t:"Independent vs Dependent Events",h:"https://www.youtube.com/watch?v=LS-_ihDKr2M",y:"vid"},{t:"Mutually Exclusive vs Independent Events",h:"https://www.youtube.com/watch?v=aVqmWW3xmdU",y:"vid"}]},
-{n:6,d:"Fri Apr 10",topic:"Probability Quiz",type:"quiz",res:[]},
-{n:7,d:"Mon Apr 13",topic:"Project Peer Assessment",res:[]},
-{n:8,d:"Tues Apr 14",topic:"Conditional Probability",blank:"https://drive.google.com/file/d/1QC16KOKKnDoCiCiDv0YAQxoRpvnVAVfq/view",filled:"https://drive.google.com/file/d/1bIZk9tg2wGqNYikK8RAW3Q_tNRqE9CtK/view",
-  res:[{t:"The Bayesian Trap",h:"https://www.youtube.com/watch?v=R13BD8qKeTg",y:"vid"},{t:"Conditional Probability Explained",h:"https://www.youtube.com/watch?v=ibINrxJLvlM",y:"vid"},{t:"Bayes & Changing Beliefs",h:"https://www.youtube.com/watch?v=HZGCoVF3YvM",y:"vid"}]},
-{n:9,d:"Weds Apr 15",topic:"Review",blank:"https://drive.google.com/file/d/1exPGCPKuZp6Tuih_eqbGWtH3w8XSw9UG/view",filled:"https://drive.google.com/file/d/136VKGecGdQsJqhLq5cPTRFJBgI-oy99c/view",type:"review",
-  res:[]},
-{n:10,d:"Thurs Apr 16",topic:"Work Period",
-  res:[{t:"Formula Sheet For Test",h:"https://drive.google.com/file/d/1s7Rm0AUgd5fnnCk2H7wznjmEwNTBetRZ/view",y:"doc"}]},
-{n:11,d:"Fri Apr 17",topic:"Basic Probability Test",type:"test",res:[]},
-]},
-
-{id:"u5",title:"Combinatorics",days:[
-{n:1,d:"Mon Apr 20",topic:"Organised Counting",blank:"https://drive.google.com/file/d/1s1oMjWbwFvtxMWk7LnzzJYWbmFqq_0mz/view",filled:"https://drive.google.com/file/d/1fTkA9ka_06jVd9gfUI6NsWFDX_6BETf7/view",
-  res:[{t:"Addition & Multiplication Principles",h:"https://www.youtube.com/watch?v=yTsbGglDo04",y:"vid"}]},
-{n:2,d:"Tues Apr 21",topic:"Fundamental Principles",blank:"https://drive.google.com/file/d/1fK7VWMJyi7OwYbm3fFTp31jaYTD2RFAY/view",filled:"https://drive.google.com/file/d/1icm5BI8oSobKaYy6fH7uzqAVR1f2wJjw/view",
-  res:[{t:"Fundamental Counting Principle",h:"https://www.youtube.com/watch?v=3lmEqp8VhAU",y:"vid"}]},
-{n:3,d:"Weds Apr 22",topic:"Work Period",
-  res:[{t:"Practice Counting",h:"https://drive.google.com/file/d/1EQBzzAAMI11qS9riRI4mDRs9KxBOOE74/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1MCI_QJt63w-FAxZ3keR8mNJkcy9l1V_9/view",y:"soln"}]},
-{n:4,d:"Thurs Apr 23",topic:"Factorials and Permutations",blank:"https://drive.google.com/file/d/1gHjpzNpVbeyy8q7yjBYtn6YBKZ1r5a1V/view",filled:"https://drive.google.com/file/d/1gOdqkk-rbGnAKC3F2MUrIrLIqLG0szmV/view",
-  res:[{t:"From Factorials to Permutations",h:"https://www.youtube.com/watch?v=tkhyQXqVxWA",y:"vid"}]},
-{n:5,d:"Fri Apr 24",topic:"Rule of Sum",blank:"https://drive.google.com/file/d/1goqAYolDzzW62I67OiDx9z-Mfa_8MM0A/view",filled:"https://drive.google.com/file/d/1BhQJyTxR8awWaRFpxLFL9gxJVj9LqQOO/view",
-  res:[{t:"Rules of Sum and Product",h:"https://www.youtube.com/watch?v=8JiWWvEoaoc",y:"vid"},{t:"Addition Rules of Probability",h:"https://www.youtube.com/watch?v=g-ARnzajpu4&t=20s",y:"vid"}]},
-{n:6,d:"Tues Apr 28",topic:"Probability Problems",blank:"https://drive.google.com/file/d/1h5n6RF2pul9eqa9hZfQa0doppA_a9KHm/view",filled:"https://drive.google.com/file/d/1h8EUW1jjIM9ST4nK60UGrXBGubx4YFPG/view",
-  res:[{t:"Permutations Review Questions",h:"https://drive.google.com/file/d/1hna1f3ZS3sovz57n5gzuL2CtGr1InBd2/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1hwfM6YUh5R5z2XjUUkz2uzVmGsGgYj0_/view",y:"soln"}]},
-{n:7,d:"Weds Apr 29",topic:"From Permutations to Combinations",blank:"https://drive.google.com/file/d/1iVpuKnNjg3_6LXUyuMF5eOtWCSKBCgU2/view",filled:"https://drive.google.com/file/d/1wfssStT2gG9YscH7091gwapf2rqfPRhc/view",
-  res:[{t:"Permutations vs Combinations",h:"https://www.youtube.com/watch?v=iKy-d5_erhI",y:"vid"}]},
-{n:8,d:"Thurs Apr 30",topic:"Permutations Quiz",type:"quiz",res:[]},
-{n:9,d:"Fri May 1",topic:"Problem Solving with Combinations",blank:"https://drive.google.com/file/d/1wf7G_0U00te4Xn7sNPc2Ek0DeyXJHUaK/view",filled:"https://drive.google.com/file/d/1isl-xjDlLU-2v8IgK7fbUMGBZKWZrd7K/view",
-  res:[{t:"Solving Combinatorics Word Problems",h:"https://www.youtube.com/watch?v=0AYjOu77u3Q",y:"vid"}]},
-{n:10,d:"Mon May 4",topic:"Stats Presentations",type:"present",
-  res:[{t:"Presentation Note/Description",h:"https://docs.google.com/document/d/166XN-NycsX7EhLASyh2XzySn9QaBhtJB1ITguzTlB_8/edit"},{t:"Presentation Rubric",h:"https://docs.google.com/document/d/1cNWB6_8IXLBKj2WTNavUh-RUTCsHAg4sTeXVYqQ--9Y/edit",y:"doc"}]},
-{n:11,d:"Tues May 5",topic:"Counting Summary",blank:"https://drive.google.com/file/d/1cSK7Agt431yzY72XAhLuon-Kb-AU_OuO/view",filled:"https://drive.google.com/file/d/16kNHFyIoDVUldHQWfR2fGQYTmWvHnVRY/view",
-  res:[{t:"All of Combinatorics in 30 Mins",h:"https://www.youtube.com/watch?v=VJkvPTY6kZw",y:"vid"},{t:"A Combinatorics Problem That May Get You Thinking",h:"https://www.youtube.com/watch?v=CLN5zMVgD90",y:"vid"}]},
-{n:12,d:"Weds May 6",topic:"Pascal's Triangle",blank:"https://drive.google.com/file/d/1kE797exEHrspJD6lFha1zaAsaM8Z5wK5/view",filled:"https://drive.google.com/file/d/1leVwOiXuS7cEMGaRA0tBS-Q6rBNGfeOU/view",
-  res:[{t:"Binomial Expansion",h:"https://www.youtube.com/watch?v=QKpkhf-Txa8&list=PL5KkMZvBpo5BoekiiL-6NzgRFo4JFnz7k",y:"vid"}]},
-{n:13,d:"Thurs May 7",topic:"Combinations Quiz",type:"quiz",res:[]},
-{n:14,d:"Fri May 8",topic:"Probabilities Using Combinations",blank:"https://drive.google.com/file/d/13GVpaOaKbQmCvlqVaJBdd0YS6mvsA6dK/view",filled:"https://drive.google.com/file/d/1CO_CD4hZWwSCMe2bscOi_7jeprOsYuCY/view",
-  res:[{t:"Permutations, Combinations, & Probability",h:"https://www.youtube.com/watch?v=tnF9f3zCCKI",y:"vid"}]},
-{n:15,d:"Mon May 11",topic:"Stats Presentations",type:"present",res:[]},
-{n:16,d:"Tues May 12",topic:"Review",blank:"https://drive.google.com/file/d/1o2_U2tCmlOPjUsmZlke5xv5CLQBw3oO0/view",type:"review",filled:"https://drive.google.com/file/d/14Uk-hdh5IkHf0Rkz87rrrC2LPHKitBfP/view",
-  res:[{t:"Play Connections",h:"https://quarkzebra.github.io/Combinatorics-Connections/",y:"link"},{t:"Counting Questions",h:"https://drive.google.com/file/d/1kdFPLBGaONaG6ZrOI31DKM4JE80Oygpp/view",y:"doc"},{t:"SOLN",h:"https://drive.google.com/file/d/1D23NLboCVdl1ANu-n4mvmdCMNJOw1Zm2/view",y:"soln"}]},
-{n:17,d:"Weds May 13",topic:"Review II",type:"review",res:[]},
-{n:18,d:"Thurs May 14",topic:"Combinatorics Test",type:"test",res:[]},
-{n:19,d:"Fri May 15",topic:"",res:[]},
-]},
-
-{id:"u6",title:"Probability Distributions",days:[
-{n:1,d:"Fri May 17",topic:"Probability Distributions & Expected Value",blank:"https://drive.google.com/file/d/1m7MLagDTpdmM3Ajs9wIArYcZ6XL43K1T/view",filled:"https://drive.google.com/file/d/1D9zThhiBFQE21VUka4N4FPf1IhAIW4Rz/view",
-  res:[{t:"The Main Idea Behind Probability Distributions",h:"https://www.youtube.com/watch?v=oI3hZJqXJuc",y:"vid"}]},
-{n:2,d:"Tues May 19",topic:"Uniform Distribution",blank:"https://drive.google.com/file/d/1mUdBr9JxhwgtexS9LMfeMhJznl2pRjLi/view",filled:"https://drive.google.com/file/d/1-Tg4XGyVzAXvIpT5D908bjCyRbSVPWW4/view",
-  res:[{t:"How to Learn Probability Distributions",h:"https://www.youtube.com/watch?v=mBCiKUzwdMs",y:"vid"}]},
-{n:3,d:"Weds May 20",topic:"Binomial Distribution",blank:"https://drive.google.com/file/d/1mkDe444GQHLh03YZ9CdLoCxsrn4C5UdY/view",filled:"https://drive.google.com/file/d/1mnRenVM53dT_vbufQf3r_Dl6Fj9R-iGo/view",
-  res:[{t:"Buying the Best Product",h:"https://www.youtube.com/watch?v=8idr1WZ1A7Q",y:"vid"}]},
-{n:4,d:"Thurs May 21",topic:"Work Period",res:[]},
-{n:5,d:"Fri May 22",topic:"Practice Quiz",type:"quiz",res:[]},
-{n:6,d:"Mon May 25",topic:"Hypergeometric Distributions",blank:"https://drive.google.com/file/d/1nKHIHiK5_kGpAEsvDiZC7JJ49QeVAn8I/view",filled:"https://drive.google.com/file/d/12h9d0JeaxrHesuiQYa2i84-AP8o5ZRrK/view",
-  res:[{t:"The Hypergeometric Probability Distribution",h:"https://www.youtube.com/watch?v=uzN7U88KSx8",y:"vid"}]},
-{n:7,d:"Tues May 26",topic:"Geometric Distributions",blank:"https://drive.google.com/file/d/1nVf0_22pnmcQgMm5C4rh-inrMheKFqJv/view",filled:"https://drive.google.com/file/d/160KRcTfkSlR_E0NLYcuO7Z_4YR-EM5Uh/view",
-  res:[{t:"Geometric Distributions & the Birthday Paradox",h:"https://www.youtube.com/watch?v=5VMTeBoEcQg",y:"vid"}]},
-{n:8,d:"Weds May 27",topic:"Continuous Random Variables",blank:"https://drive.google.com/file/d/1nj95qf0ABgD3BDKxGJtik2_4diCgsL1_/view",filled:"https://drive.google.com/file/d/1D1TTTabhm26GZOsT2fcL4UX0ZlTQjaWq/view",
-  res:[{t:"Understanding Continuous Random Variables",h:"https://www.youtube.com/watch?v=UVQs9zikfe0",y:"vid"}]},
-{n:9,d:"Thurs May 28",topic:"Stats Presentations",type:"present",res:[]},
-{n:10,d:"Fri May 29",topic:"Stats Presentations",type:"present",res:[]},
-{n:11,d:"Mon Jun 1",topic:"Stats Presentations",type:"present",res:[]},
-{n:12,d:"Tues Jun 2",topic:"Stats Presentations",type:"present",res:[]},
-{n:13,d:"Weds Jun 3",topic:"The Normal Distribution",blank:"https://drive.google.com/file/d/1TP2J8VXP-93treHpCtZ3SjgCzmFusxel/view",filled:"https://drive.google.com/file/d/1gYS7X0uVUM873v0Vkrkeq2axLr04lj4I/view",
-  res:[{t:"z-Score Calculator (Sheets)",h:"https://docs.google.com/spreadsheets/d/12Cclq8Av9eT0BB-mM37J9HcNZ34DoV4KuNJG1GTUwYU/copy"},{t:"The Normal Distribution Clearly Explained",h:"https://www.youtube.com/watch?v=rzFX5NWojp0",y:"vid"},{t:"Normal Distribution (PDF, CDF, PPF) in 3 Minutes",h:"https://www.youtube.com/watch?v=3VYupIsbLlY",y:"vid"},{t:"Normal Distribution Using Tables",h:"https://www.youtube.com/watch?v=xI9ZHGOSaCg",y:"vid"}]},
-{n:14,d:"Thurs Jun 4",topic:"Distributions Quiz",type:"quiz",res:[]},
-{n:15,d:"Fri Jun 5",topic:"Carnival Planning",res:[]},
-{n:16,d:"Mon Jun 8",topic:"Normal Sampling & Modelling",blank:"https://drive.google.com/file/d/1CzuN1DM8TWluygM7Mz5vVAZRI5VH2DK5/view",filled:"https://drive.google.com/file/d/163jntZR7Mwnh89kdCXmgoX32WOzQ29gy/view",
-  res:[{t:"Sampling From a Normal Distribution Clearly Explained",h:"https://www.youtube.com/watch?v=XLCWeSVzHUU",y:"vid"}]},
-{n:17,d:"Tues Jun 9",topic:"Repeated Sampling & Hypothesis Testing",blank:"https://drive.google.com/file/d/180O1EWFrIykMahrNV5FT_COQqLkKQJUN/view",filled:"https://drive.google.com/file/d/1jboU-UcQTeReS7P8kkD8C1eEqkkrw2ZZ/view",
-  res:[{t:"Hypothesis Testing and The Null Hypothesis",h:"https://www.youtube.com/watch?v=0oc49DyA3hU",y:"vid"}]},
-{n:18,d:"Weds Jun 10",topic:"Confidence Intervals",blank:"https://drive.google.com/file/d/1ZuAudR8ZE31Pdx--zUBRoUD67O6_jUvF/view",filledSoon:true,
-  res:[{t:"REWATCH: Why Most Published Research is Wrong",h:"https://www.youtube.com/watch?v=42QuXLucH3Q",y:"vid"}]},
-{n:19,d:"Thurs Jun 11",topic:"Review",type:"review",
-  res:[{t:"Formula Sheet for Test",h:"https://drive.google.com/file/d/1GGyyt0gFtBAovkVGp1TVA82ChyHoXnWe/view",y:"doc"}]},
-{n:20,d:"Tues Jun 16",topic:"Probability Distributions Test",type:"test",res:[]},
-]},
-
-//Topic(s) Not Covered
-//{n:21,d:"Weds Jun 17",topic:"Connections to Discrete Random Variables",blank:"https://drive.google.com/file/d/1HeNpSO4L6EhMOFcqIfGu3iFf6detA95a/view",filledSoon:true,
-//res:[{t:"But What is the Central Limit Theorem",h:"https://www.youtube.com/watch?v=zeJD6dqJ5lo",y:"vid"}]},
-
-
-{id:"carnival",title:"Carnival",days:[
-{n:1,d:"",topic:"Carnival Planning",topicNote:"To be completed during unit 6",blank:"https://docs.google.com/document/d/1p-_PJhjXNnMGIQ1SvB2zfvBsRLOPud73DJA8vc9IEOE/edit",
-  res:[]},
-{n:2,d:"Fri Jun 12",topic:"Carnival Setup",res:[]},
-{n:3,d:"Mon Jun 15",topic:"Carnival!!!",blank:"https://docs.google.com/document/d/1p-_PJhjXNnMGIQ1SvB2zfvBsRLOPud73DJA8vc9IEOE/edit",
-  res:[]},
-{n:4,d:"Tues Jan 20",topic:"Report Writing",res:[]},
-{n:5,d:"Weds Jan 21",topic:"Report Writing",res:[]},
-]},
-];
-
-// ═══════════════════════════════════════════════
-// AUTO-DETECT CURRENT UNIT & DAY
-// ═══════════════════════════════════════════════
-let CURRENT_UNIT = 1;
-let TODAY_UNIT = -1;
-let TODAY_DAY = -1;
-
-(function autoDetect(){
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let bestUnit = -1, bestDay = -1, bestDate = null;
-  let lastPastUnit = -1;
-
-  C.forEach((unit, ui) => {
-    unit.days.forEach((day) => {
-      const d = parseDay(day.d);
-      if (!d) return;
-      // Track the most recent past-or-today lesson
-      if (d <= today) {
-        lastPastUnit = ui;
-        if (!bestDate || d >= bestDate) {
-          bestDate = d;
-          bestUnit = ui;
-          bestDay = day.n;
-        }
-      }
-      // Exact match for today
-      if (d.getTime() === today.getTime()) {
-        TODAY_UNIT = ui;
-        TODAY_DAY = day.n;
-      }
-    });
-  });
-
-  // Set current unit to the one containing the most recent lesson
-  if (bestUnit >= 0) {
-    // Find the 1-indexed position (skipping specials for numbering)
-    CURRENT_UNIT = bestUnit + 1;
-  }
-})();
-
-// ═══════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════
-
-function renderRes(items) {
-  if (!items || items.length === 0) return '<span style="color:var(--t4)">—</span>';
-  return `<div class="lgroup">${items.map(i => mkLink(i.t, i.h, i.y)).join('')}</div>`;
-}
-
-function renderUnit(unit, idx) {
-  const uIdx = idx + 1;
-  const isCurrent = uIdx === CURRENT_UNIT;
-  let status, statusLabel;
-  if (unit.special) {
-    status = 'special';
-    statusLabel = 'Ongoing';
-  } else if (isCurrent) {
-    status = 'active';
-    statusLabel = 'Current';
-  } else if (uIdx < CURRENT_UNIT) {
-    status = 'done';
-    statusLabel = 'Done';
-  } else {
-    status = 'upcoming';
-    statusLabel = 'Upcoming';
-  }
-
-  const displayNum = unit.special ? '✦' : String(uIdx).padStart(2,'0');
-
-  const rows = unit.days.map((day, di) => {
-    if (!day.topic) return '';
-    let rc = day.type === 'test' ? 'is-test' : day.type === 'quiz' ? 'is-quiz' : day.type === 'review' ? 'is-review' : day.type === 'present' ? 'is-present' : '';
-    // Highlight today's row
-    if (idx === TODAY_UNIT && day.n === TODAY_DAY) rc += ' is-today';
-    const tipDir = di === 0 ? 'below' : '';
-    // Stagger delay
-    const stagger = `style="transition-delay:${di * 0.03}s"`;
-
-    let topicHTML = '';
-    if (day.type === 'test') {
-      topicHTML = `<div class="topic-head"><span class="test-badge">${day.topic}</span>${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>`;
-    } else if (day.type === 'quiz') {
-      topicHTML = `<div class="topic-head"><span class="quiz-badge">${day.topic}</span>${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>`;
-    } else {
-      let titleLink = '';
-      if (day.blank) {
-        titleLink = `<span class="nt-wrap"><a href="${day.blank}" target="_blank" class="dlink note-link">${IC.doc}${day.topic}</a><span class="nt-tip ${tipDir}">Click to view blank note and homework</span></span>`;
-      } else {
-        titleLink = `<span style="font-size:.84rem;font-weight:500">${day.topic}</span>`;
-      }
-
-      let noteHTML = '';
-      if (day.topicNote) {
-        noteHTML = `<div style="font-size:.7rem;color:var(--t3);font-style:italic;margin-top:.1rem">${day.topicNote}</div>`;
-      }
-
-      let completedHTML = '';
-      if (day.filled) {
-        completedHTML = `<span class="cn-wrap"><a href="${day.filled}" target="_blank" class="dlink completed-link">${IC.soln}Completed Note</a></span>`;
-      } else if (day.filledSoon && day.blank) {
-        completedHTML = `<span class="cn-wrap"><span class="dlink completed-link soon">${IC.doc}Completed Note</span><span class="cn-tip ${tipDir}">Coming soon</span></span>`;
-      }
-
-      topicHTML = `<div class="topic-head">${titleLink}${day.d ? `<span class="lesson-date">${day.d}</span>` : ''}</div>${noteHTML}${completedHTML}`;
-    }
-
-    return `<tr class="${rc}" ${stagger}><td class="td-num">${day.n}</td><td class="td-topic">${topicHTML}</td><td>${renderRes(day.res)}</td></tr>`;
-  }).join('');
-
-  return `<div class="unit${isCurrent ? ' current' : ''}" data-unit="${uIdx}">
-    <div class="uhead" onclick="toggleU(this)">
-      <span class="unum">${displayNum}</span>
-      <span class="utitle">${unit.title}</span>
-      <span class="ucount">${unit.days.filter(d=>d.topic).length} days</span>
-      <span class="utag ${status}">${statusLabel}</span>
-      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  <header style="--i:1">
+    <div class="htop">
+      <span class="chip">MDM4U</span>
+      <div class="hacts">
+        <button class="hbtn" id="dmBtn"></button>
+        <button class="hbtn" id="expBtn">Expand All</button>
+        <button class="hbtn" id="helpBtn" aria-expanded="false" aria-controls="help" aria-label="What the links and colours mean">?</button>
+        <div class="help" id="help" role="dialog" aria-label="Legend"></div>
+      </div>
     </div>
-    <div class="ubody"><div class="ubody-inner"><div class="ucontent">
-      <table class="ltable">
-        <thead><tr><th>#</th><th class="th-notes">Course Notes & Homework</th><th class="th-res">Resources</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div></div></div>
-  </div>`;
+    <h1>Data <em>Management</em></h1>
+    <div class="sub" id="subTitle"></div>
+    <nav class="ess" id="ess" aria-label="Course essentials"></nav>
+  </header>
+
+  <section class="hero" id="hero" hidden style="--i:2"></section>
+
+  <div class="sbar" style="--i:3">
+    <span class="si" id="siIco"></span>
+    <input type="text" placeholder="Filter lessons…" id="si">
+    <span class="sc" id="sc"></span>
+  </div>
+
+  <div id="units"></div>
+  <div class="nomatch-msg" id="nomatch" hidden>No lessons match. Try a topic word.</div>
+
+</div>
+
+<button class="fab" id="fab"></button>
+
+<script src="data.js"></script>
+<script>
+/* ══════════ Date & state ══════════ */
+function todayISO(){
+  const p=new URLSearchParams(location.search).get("today");
+  if(p&&/^\d{4}-\d{2}-\d{2}$/.test(p))return p; // debug: ?today=2026-09-10
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+const TODAY=todayISO();
+function stateOf(day){
+  if(!day.iso)return "undated";
+  return day.iso<TODAY?"past":day.iso===TODAY?"today":"future";
+}
+function fmtDate(iso){
+  if(!iso)return "—";
+  return new Date(iso+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+}
+function fmtDate2(iso){
+  if(!iso)return "—";
+  const d=new Date(iso+"T12:00:00");
+  return `<span class="dow">${d.toLocaleDateString("en-US",{weekday:"short"})}</span><span class="dt">${d.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</span>`;
+}
+function fmtShort(iso){
+  return new Date(iso+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+}
+const UNO=[];COURSE.units.reduce((n,u,i)=>(UNO[i]=u.noNumber?0:n+1,u.noNumber?n:n+1),0);
+function unitLabel(u,i){return u.noNumber?u.name:"Unit "+UNO[i];}
+function unitRange(u){
+  const dated=u.days.filter(d=>d.iso);
+  if(!dated.length)return "";
+  return fmtShort(dated[0].iso)+" – "+fmtShort(dated[dated.length-1].iso);
 }
 
-// Build
-const container = document.getElementById('units');
-container.innerHTML = C.map((u, i) => renderUnit(u, i)).join('');
+/* which unit is current: the one containing today or the next class */
+const allDated=COURSE.units.flatMap((u,i)=>u.days.filter(d=>d.iso).map(d=>({u:i,iso:d.iso,day:d})));
+allDated.sort((a,b)=>a.iso<b.iso?-1:1);
+const heroEntry=allDated.find(e=>e.iso===TODAY)||allDated.find(e=>e.iso>TODAY)||null;
+const currentUnit=heroEntry?heroEntry.u:COURSE.units.length-1;
+const daysDone=allDated.filter(e=>e.iso<=TODAY).length;
+const daysTotal=COURSE.units.reduce((n,u)=>n+u.days.length,0);
 
-// ── Toggle ──
-function toggleU(h) { h.parentElement.classList.toggle('open'); }
 
-let allExp = false;
-function toggleAll() {
-  allExp = !allExp;
-  document.querySelectorAll('.unit').forEach(u => allExp ? u.classList.add('open') : u.classList.remove('open'));
-  document.getElementById('expBtn').textContent = allExp ? 'Collapse All' : 'Expand All';
-  if (!allExp) { const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`); if (c) c.classList.add('open'); }
+/* ══════════ Icons (inline SVG so they look the same on every phone) ══════════ */
+const ICONS={
+  arrow:'<path d="M7 17L17 7M9 7h8v8"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  play:'<path d="M7 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+  pencil:'<path d="M4 20l4-1L18.5 8.5a2.1 2.1 0 0 0-3-3L5 16l-1 4z"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+  skull:'<path fill="currentColor" stroke="none" fill-rule="evenodd" d="M12 2a8 8 0 0 0-8 8c0 2.6 1.2 4.6 3 6v3a1 1 0 0 0 1 1h1v-2h2v2h2v-2h2v2h1a1 1 0 0 0 1-1v-3c1.8-1.4 3-3.4 3-6a8 8 0 0 0-8-8zM8.5 13a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm7 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>',
+  layers:'<path d="M12 3.5l9 4.5-9 4.5-9-4.5z"/><path d="M3 12.5l9 4.5 9-4.5"/><path d="M3 16.5l9 4.5 9-4.5"/>',
+  doc:'<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M9.5 13h6M9.5 17h6"/>',
+  list:'<path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="M4 6.5l1.2 1.2 2.3-2.4M4 12l1.2 1.2 2.3-2.4M4 17.5l1.2 1.2 2.3-2.4"/>',
+  calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/>',
+  haz:'<path d="M12 3.5L2.5 20h19z"/><path d="M12 9.5v4.5M12 17h.01"/>',
+};
+function ico(name,cls){
+  return `<svg class="ico ${name}${cls?" "+cls:""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
 }
 
-// ── Search ──
-function filterL(q) {
-  q = q.toLowerCase().trim();
-  document.querySelectorAll('.unit').forEach(u => {
-    if (!q) { u.style.display = ''; return; }
-    const m = u.textContent.toLowerCase().includes(q);
-    u.style.display = m ? '' : 'none';
-    if (m && q.length > 1) u.classList.add('open');
+/* ══════════ Link rendering ══════════ */
+const WARN=ico("skull","skull")+'<span>Do not look if you haven’t done the practice</span><button class="tgo" type="button">Continue</button>';
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function live(t,url,cls,icon,warn){
+  const a=`<a class="dlink ${cls}" href="${esc(url)}" target="_blank" rel="noopener"${warn?' data-warn':''}>${ico(icon)}<span class="lt">${t}</span></a>`;
+  return warn?`<span class="tipwrap">${a}<span class="tip warn">${WARN}</span></span>`:a;
+}
+function pend(t,icon){
+  return `<span class="tipwrap"><span class="dlink pend" tabindex="0">${ico(icon)}<span class="lt">${t}</span></span><span class="tip info">Coming soon</span></span>`;
+}
+function extraLink(e){
+  const[t,url,kind]=e;
+  if(kind==="vid")return live(t,url,"vid","play",false);
+  if(kind==="ans")return live(t,url,"ans","check",true);
+  if(kind==="skills")return live(t,url,"skills","layers",false);
+  return live(t,url,"doc","arrow",false);
+}
+/* A worksheet's answers ride along as a chip on the same line instead of a stray "Answers" row */
+function extrasHTML(list){
+  const items=[];
+  list.forEach(e=>{
+    if(!e)return;
+    const kind=e[2];
+    if(kind==="ans"&&items.length&&items[items.length-1].kind!=="ans"){items[items.length-1].ans.push(e);return}
+    items.push({kind,e,ans:[]});
+  });
+  return items.map(it=>{
+    const main=extraLink(it.e);
+    if(!it.ans.length)return main;
+    const chips=it.ans.map(a=>`<span class="tipwrap"><a class="xans" data-warn href="${esc(a[1])}" target="_blank" rel="noopener">${ico("check")}${a[0]}</a><span class="tip warn">${WARN}</span></span>`).join("");
+    return `<div class="xitem">${main}${chips}</div>`;
+  }).join("");
+}
+/* Keys released today or in the last few days get a pill so students can see what is new */
+function daysAgo(iso){return Math.round((new Date(TODAY+"T12:00:00")-new Date(iso+"T12:00:00"))/864e5)}
+function ansState(day){
+  if(!day.ans||!day.iso)return "";
+  const n=daysAgo(day.iso);
+  return n===0?"today":(n>0&&n<=3)?"new":"";
+}
+function newPill(day){
+  const s=ansState(day);
+  return s==="today"?'<span class="newp">Posted today</span>':s==="new"?'<span class="newp">New</span>':"";
+}
+function noteLinks(day){
+  const links=[];
+  const hasNote=day.num||day.noteLabel;
+  if(hasNote){
+    const label=day.noteLabel||`${day.num} Blank Note & Practice Problems`;
+    links.push(day.note?live(label,day.note,"note","arrow",false):pend(label,"arrow"));
+    const ansLabel=day.ansLabel||"Answers";
+    if(day.ans)links.push(`<span class="lrow">${live(ansLabel,day.ans,"ans","check",true)}${newPill(day)}</span>`);
+    else links.push(pend(ansLabel,"check"));
+  }
+  return links;
+}
+
+/* ══════════ Render units ══════════ */
+const FLAGS={test:"Test",quiz:"Quiz",pquiz:"Practice Quiz",exam:"Exam"};
+/* The flag sits at the top of a day: "PRACTICE QUIZ: Current Topic + …". covers is optional. */
+function flagHTML(day){
+  const k=FLAGS[day.flag];
+  if(!k)return "";
+  const c=(day.covers||"").trim();
+  return `<div class="flag ${day.flag}"><span class="fk">${k}${c?":":""}</span>${c?`<span class="fc">${c}</span>`:""}</div>`;
+}
+/* What to call a day that has no topic of its own (a pure quiz/test day) */
+function dayName(day){
+  if(day.topic)return day.topic;
+  const k=FLAGS[day.flag]||"";
+  const c=(day.covers||"").trim();
+  return k+(c?": "+c:"");
+}
+function dayRow(day,i){
+  const st=stateOf(day);
+  const cls=[FLAGS[day.flag]||day.flag==="review"?"is-"+day.flag:"",st==="today"?"is-today":""].join(" ");
+  const links=noteLinks(day);
+  const extras=extrasHTML(day.extras||[]);
+  const heroId=heroEntry&&day===heroEntry.day?' id="heroDayRow"':"";
+  return `<tr class="${cls}"${heroId} style="--i:${i}">
+    <td class="td-num">${day.d}</td>
+    <td class="td-date">${fmtDate2(day.iso)}${st==="today"?'<br><span class="today-pill">Today</span>':""}</td>
+    <td class="td-topic">${flagHTML(day)}${day.topic?`<span class="topic">${day.topic}</span>`:""}<div class="lgroup">${links.join("")}</div></td>
+    <td class="td-extra${extras?"":" empty"}"><div class="lgroup">${extras}</div></td>
+  </tr>`;
+}
+function unitMeta(u){
+  const dated=u.days.filter(d=>d.iso);
+  const done=dated.filter(d=>d.iso<=TODAY).length;
+  const res=u.days.reduce((n,d)=>n+(d.note?1:0)+(d.ans?1:0)+(d.extras||[]).filter(Boolean).length,0);
+  return `${done} / ${u.days.length} days · ${res} resource${res===1?"":"s"}`;
+}
+function freshTag(u){
+  const n=u.days.filter(ansState).length;
+  return n?`<span class="utag fresh">${n} new</span>`:"";
+}
+function unitTag(u,i){
+  const lastIso=u.days.filter(d=>d.iso).map(d=>d.iso).pop();
+  if(i===currentUnit)return '<span class="utag active">Current</span>';
+  if(lastIso&&lastIso<TODAY)return '<span class="utag done">Done</span>';
+  if(i===currentUnit+1)return '<span class="utag next">Up Next</span>';
+  return '<span class="utag planned">Planned</span>';
+}
+function render(){
+  document.getElementById("subTitle").textContent=COURSE.sub;
+  document.getElementById("units").innerHTML=COURSE.units.map((u,i)=>{
+    const open=i===currentUnit?"open":"";
+    const cur=i===currentUnit?"current":"";
+    return `<section class="unit ${open} ${cur}" id="u${i}" style="--i:${i+4}">
+      <button class="uhead" aria-expanded="${i===currentUnit}" onclick="toggleU(this)">
+        ${u.noNumber?"":`<span class="unum">Unit ${UNO[i]}</span>`}
+        <span class="utitle">${u.name}</span>
+        <span class="urange">${unitRange(u)}</span>
+        <span class="umeta">${unitMeta(u)}</span>
+        ${freshTag(u)}${unitTag(u,i)}
+        <svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="ubody"><div class="ubody-inner">
+        <div class="ucontent"><table class="ltable">
+          <thead><tr><th>Day</th><th>Date</th><th class="th-topic">Topic · Note &amp; Practice Problems</th><th class="th-extra">Extra Practice &amp; Resources</th></tr></thead>
+          <tbody>${u.days.map(dayRow).join("")}</tbody>
+        </table></div>
+      </div></div>
+    </section>`;
+  }).join("");
+}
+function toggleU(btn){
+  const u=btn.closest(".unit");u.classList.toggle("open");
+  btn.setAttribute("aria-expanded",u.classList.contains("open"));
+}
+
+/* ══════════ Course essentials ══════════
+   COURSE.essentials = [[label, url, kind, warn?], ...]; kind is "outline",
+   "routine" or "calc". A warn string rides on the link as a hazard tip (the
+   pill itself stays plain): hover on desktop, and on a phone the first tap
+   raises it as a sheet with Continue (the same data-warn mechanism the answer
+   keys use). */
+function renderEssentials(){
+  const el=document.getElementById("ess");
+  const list=(COURSE.essentials||[]).filter(Boolean);
+  if(!list.length){el.hidden=true;return}
+  const ICO={outline:"doc",routine:"list",calc:"calc"};
+  el.innerHTML=list.map(e=>{
+    const[t,url,kind,warn]=e;
+    const a=`<a href="${esc(url)}" target="_blank" rel="noopener"${warn?' data-warn':''}>${ico(ICO[kind]||"arrow")}<span>${t}</span></a>`;
+    return warn?`<span class="tipwrap">${a}<span class="tip hazard">${ico("haz","haz")}<span>${esc(warn)}</span><button class="tgo" type="button">Continue</button></span></span>`:a;
+  }).join("");
+}
+
+/* ══════════ Hero ══════════ */
+function renderHero(){
+  const h=document.getElementById("hero");
+  if(!heroEntry){h.hidden=true;return}
+  const {u,day}=heroEntry;
+  const isToday=day.iso===TODAY;
+  const label=isToday?"Today":"Next class";
+  const btns=[];
+  const hasNote=day.num||day.noteLabel;
+  if(hasNote){
+    const nl=day.noteLabel||`${day.num} Blank Note & Practice Problems`;
+    btns.push(day.note
+      ?`<a class="btn pri" href="${esc(day.note)}" target="_blank" rel="noopener">${ico("arrow")} ${nl}</a>`
+      :`<span class="tipwrap"><span class="btn dis">${ico("arrow")} ${nl}</span><span class="tip info up">Coming soon</span></span>`);
+    // Answers only appears here once it's actually linked
+    if(day.ans){
+      const al=day.ansLabel||"Answers";
+      btns.push(`<span class="tipwrap"><a class="btn ansb" data-warn href="${esc(day.ans)}" target="_blank" rel="noopener">${ico("check")} ${al}</a><span class="tip warn up">${WARN}</span></span>`);
+    }
+  }
+  // Until today's key is up, the most recently released key is one tap away
+  if(!day.ans){
+    const latest=[...allDated].reverse().find(e=>e.iso<=TODAY&&e.day.ans);
+    if(latest){
+      const ll=latest.day.num?`Latest answers · ${latest.day.num}`:`Latest answers · ${latest.day.ansLabel||latest.day.topic}`;
+      btns.push(`<span class="tipwrap"><a class="btn ghost" data-warn href="${esc(latest.day.ans)}" target="_blank" rel="noopener">${ico("check")} ${ll}</a><span class="tip warn up">${WARN}</span></span>`);
+    }
+  }
+  h.hidden=false;
+  h.setAttribute("role","link");
+  h.setAttribute("tabindex","0");
+  h.setAttribute("aria-label",`Jump to ${dayName(day)} in the course table`);
+  h.innerHTML=`
+    <div class="eyebrow"><span class="live"></span>${label} · ${fmtDate(day.iso)} · ${unitLabel(COURSE.units[u],u)}, Day ${day.d}</div>
+    ${flagHTML(day)}${day.topic?`<h2>${day.topic}</h2>`:""}
+    ${btns.length?`<div class="acts">${btns.join("")}</div>`:""}`;
+  function jump(){
+    const unit=document.getElementById("u"+u);
+    if(unit&&!unit.classList.contains("open")){
+      unit.classList.add("open");
+      unit.querySelector(".uhead").setAttribute("aria-expanded","true");
+    }
+    const row=document.getElementById("heroDayRow");
+    if(row){
+      row.scrollIntoView({behavior:"smooth",block:"center"});
+      row.classList.remove("flash");
+      requestAnimationFrame(()=>row.classList.add("flash"));
+    }
+  }
+  h.addEventListener("click",e=>{if(!e.target.closest("a"))jump()});
+  h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();jump()}});
+}
+
+const LEGEND_HTML=`<div class="ht">What the links mean</div><div class="hi"><span class="dlink note">${ico("arrow")}<span class="lt">1.4 Blank Note &amp; Practice Problems</span></span><small>the day's note</small></div><div class="hi"><span class="dlink ans">${ico("check")}<span class="lt">Answers</span></span><small>posted after class · do the practice first</small></div><div class="hi"><span class="dlink vid">${ico("play")}<span class="lt">Video</span></span></div><div class="hi"><span class="dlink doc">${ico("arrow")}<span class="lt">Worksheet</span></span><span class="xans">${ico("check")}Answers</span><small>a resource with its own answers</small></div><div class="hi"><span class="dlink skills">${ico("layers")}<span class="lt">Prerequisite Skills</span></span><small>earlier-course skills a unit leans on · answers on the sheet</small></div><div class="hi"><span class="dlink pend">${ico("arrow")}<span class="lt">Greyed out</span></span><small>coming soon</small></div><div class="hi"><span class="newp">New</span><small>answers released in the last few days</small></div><div class="hi"><span class="swatch"></span><small>today's lesson</small></div>`;
+/* ══════════ Controls ══════════ */
+document.getElementById("expBtn").addEventListener("click",function(){
+  const units=[...document.querySelectorAll(".unit")];
+  const anyClosed=units.some(u=>!u.classList.contains("open"));
+  units.forEach(u=>{u.classList.toggle("open",anyClosed);u.querySelector(".uhead").setAttribute("aria-expanded",anyClosed)});
+  this.textContent=anyClosed?"Collapse All":"Expand All";
+});
+const sc=document.getElementById("sc"),nomatch=document.getElementById("nomatch");
+document.getElementById("si").addEventListener("input",function(){
+  const q=this.value.trim().toLowerCase();
+  let n=0;
+  document.querySelectorAll(".unit").forEach(u=>{
+    let hits=0;
+    u.querySelectorAll(".ltable tbody tr").forEach(tr=>{
+      const show=!q||tr.textContent.toLowerCase().includes(q);
+      tr.style.display=show?"":"none";
+      tr.classList.remove("fin");
+      if(q&&show){void tr.offsetWidth;tr.classList.add("fin");hits++}
+    });
+    n+=hits;
+    u.classList.toggle("nomatch",!!q&&hits===0);
+    if(q&&hits){u.classList.add("open");u.querySelector(".uhead").setAttribute("aria-expanded","true")}
+  });
+  sc.textContent=q&&n?`${n} lesson${n===1?"":"s"}`:"";
+  nomatch.hidden=!(q&&n===0);
+});
+const pfill=document.getElementById("pf"),ptxt=document.getElementById("pt");
+const REDUCE=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+requestAnimationFrame(()=>{pfill.style.width=(daysDone/daysTotal*100)+"%"});
+function setProg(n){ptxt.textContent=`Day ${n} / ${daysTotal} · ${unitLabel(COURSE.units[currentUnit],currentUnit)}`}
+if(daysDone===0)ptxt.textContent=`Starts ${fmtShort(allDated[0].iso)}`;
+else if(daysDone>=daysTotal)ptxt.textContent="Course complete";
+else if(REDUCE)setProg(daysDone);
+else{
+  const t0=performance.now(),dur=700;
+  (function tick(now){
+    const k=Math.min((now-t0)/dur,1);
+    setProg(Math.round(daysDone*(1-Math.pow(1-k,3))));
+    if(k<1)requestAnimationFrame(tick);
+  })(t0);
+}
+const fab=document.getElementById("fab");
+fab.innerHTML=ico("up")+"Current Unit";
+const topbar=document.querySelector(".top-bar");
+function setTbh(){document.documentElement.style.setProperty("--tbh",topbar.offsetHeight+"px")}
+setTbh();window.addEventListener("resize",setTbh);
+/* Unit headers stick under the top bar while their unit scrolls; a soft shadow says "stuck" */
+function stuckCheck(){
+  const tb=topbar.offsetHeight;
+  document.querySelectorAll(".unit").forEach(u=>{
+    const h=u.querySelector(".uhead");
+    if(!u.classList.contains("open")){h.classList.remove("stuck");return}
+    const r=u.getBoundingClientRect();
+    h.classList.toggle("stuck",r.top<tb-1&&r.bottom>tb+h.offsetHeight+24);
   });
 }
-document.addEventListener('keydown', e => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); document.getElementById('si').focus(); }
-  if (e.key === 'Escape') { const i = document.getElementById('si'); i.blur(); i.value = ''; filterL(''); }
-});
+let scrollTick=false;
+window.addEventListener("scroll",()=>{
+  if(scrollTick)return;scrollTick=true;
+  requestAnimationFrame(()=>{fab.classList.toggle("visible",window.scrollY>400);stuckCheck();scrollTick=false});
+},{passive:true});
+document.getElementById("units").addEventListener("click",()=>requestAnimationFrame(stuckCheck));
 
-// ── Jump ──
-function jumpC() {
-  const c = document.querySelector('.unit.current');
-  if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (!c.classList.contains('open')) c.classList.add('open'); }
+/* ══════════ Legend popover ══════════ */
+const helpBtn=document.getElementById("helpBtn"),help=document.getElementById("help");
+help.innerHTML=LEGEND_HTML;
+function setHelp(o){help.classList.toggle("open",o);helpBtn.setAttribute("aria-expanded",o)}
+helpBtn.addEventListener("click",e=>{e.stopPropagation();setHelp(!help.classList.contains("open"))});
+document.addEventListener("click",e=>{if(!e.target.closest("#help"))setHelp(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){setHelp(false);disarm()}});
+
+/* ══════════ Touch: answers need a second tap ══════════
+   No hover on a phone, so the first tap on any Answers link raises the
+   warning as a sheet with a Continue button. Continue (or a second tap
+   on the link) opens it. */
+const TOUCH=window.matchMedia("(hover: none)").matches;
+function disarm(){document.querySelectorAll(".tipwrap.armed").forEach(w=>w.classList.remove("armed"));document.body.classList.remove("armed")}
+document.addEventListener("click",e=>{
+  const go=e.target.closest(".tgo");
+  if(go){
+    e.preventDefault();e.stopPropagation();
+    const a=go.closest(".tipwrap")?.querySelector("a[data-warn]");
+    disarm();
+    if(a)window.open(a.href,"_blank","noopener");
+    return;
+  }
+  const a=e.target.closest("a[data-warn]");
+  if(a&&TOUCH){
+    const w=a.closest(".tipwrap");
+    if(w&&!w.classList.contains("armed")){e.preventDefault();e.stopPropagation();disarm();w.classList.add("armed");document.body.classList.add("armed");return}
+    disarm();return;
+  }
+  if(!e.target.closest(".tipwrap.armed"))disarm();
+},true);
+fab.addEventListener("click",()=>{document.getElementById("u"+currentUnit).scrollIntoView({behavior:"smooth"})});
+
+/* theme (persisted) */
+const dmBtn=document.getElementById("dmBtn");
+const stored=localStorage.getItem("mdm4u-theme");
+const startDark=stored?stored==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;
+document.documentElement.setAttribute("data-theme",startDark?"dark":"light");
+function isDark(){return document.documentElement.getAttribute("data-theme")==="dark"}
+function syncBtn(){dmBtn.innerHTML=isDark()?ico("sun")+" Light":ico("moon")+" Dark"}
+document.getElementById("siIco").innerHTML=ico("search");
+dmBtn.addEventListener("click",()=>{
+  const next=isDark()?"light":"dark";
+  const apply=()=>{
+    document.documentElement.setAttribute("data-theme",next);
+    localStorage.setItem("mdm4u-theme",next);
+    syncBtn();bgColors();
+  };
+  if(document.startViewTransition&&!REDUCE)document.startViewTransition(apply);else apply();
+});
+render();renderEssentials();renderHero();syncBtn();
+
+/* ══════════ Animated background: data settling into shape ══════════
+   Calm vignettes from the course, one idea each: dots drop into a
+   histogram and a normal curve traces over the stack; a scatter plot
+   fills in and its line of best fit draws itself (with its real r); a
+   box plot opens out from its median over a strip of data. Each fades
+   in, builds slowly, rests, and fades away. No clicks, no cursor play. */
+const cv=document.getElementById("bg"),cx=cv.getContext("2d");
+let W,H,DPR,RGB="232,16,61",ALPHA=.1;
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MONO="11px 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace";
+function bgColors(){
+  const s=getComputedStyle(document.documentElement);
+  RGB=(s.getPropertyValue("--curve")||RGB).trim();
+  ALPHA=parseFloat(s.getPropertyValue("--curve-a"))||ALPHA;
+  if(reduce&&vigs.length)drawStatic();
+}
+function sizeBg(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  W=window.innerWidth;H=window.innerHeight;
+  cv.width=W*DPR;cv.height=H*DPR;
+  cx.setTransform(DPR,0,0,DPR,0,0);
+}
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const clamp01=p=>Math.max(0,Math.min(1,p));
+const easeO=p=>1-Math.pow(1-clamp01(p),3);
+const easeIn=p=>clamp01(p)*clamp01(p);
+function gauss(){let s=0;for(let i=0;i<6;i++)s+=Math.random();return (s-3)/Math.SQRT1_2}
+const col=a=>`rgba(${RGB},${Math.max(0,a)})`;
+
+const T_IN=1400,T_OUT=2600,N_VIGS=3;
+const KINDS=["hist","scatter","box"];
+const vigs=[];
+
+function makeHist(v){
+  const bins=13,n=58,cell=v.w/bins,span=6.5;
+  const count=new Array(bins).fill(0),dots=[];
+  for(let i=0;i<n;i++){
+    const b=Math.max(0,Math.min(bins-1,Math.floor((gauss()+span/2)/span*bins)));
+    dots.push({b,k:count[b]++,t:i/n});
+  }
+  const unit=Math.min(cell*.82,v.h*.86/Math.max(...count));
+  Object.assign(v,{bins,n,cell,span,dots,unit});
+}
+function makeScatter(v){
+  const n=17,dir=Math.random()<.5?1:-1,noise=rnd(.08,.2),pts=[];
+  for(let i=0;i<n;i++){
+    const x=rnd(.04,.96);
+    const y=Math.max(.02,Math.min(.98,.5+dir*(x-.5)*rnd(.7,.9)+gauss()*noise));
+    pts.push({x,y,t:i/n});
+  }
+  const mx=pts.reduce((s,p)=>s+p.x,0)/n,my=pts.reduce((s,p)=>s+p.y,0)/n;
+  let sxy=0,sxx=0,syy=0;
+  pts.forEach(p=>{sxy+=(p.x-mx)*(p.y-my);sxx+=(p.x-mx)**2;syy+=(p.y-my)**2});
+  const b=sxy/sxx;
+  Object.assign(v,{pts,b,a:my-b*mx,r:sxy/Math.sqrt(sxx*syy)});
+}
+function makeBox(v){
+  const n=25,skew=Math.random()<.5?1:-1,vals=[];
+  for(let i=0;i<n;i++){const e=-Math.log(1-Math.random()*.97);vals.push(skew>0?e:-e)}
+  const lo=Math.min(...vals),hi=Math.max(...vals);
+  const xs=vals.map(x=>(x-lo)/(hi-lo||1)).sort((a,b)=>a-b);
+  const q=p=>{const h=(n-1)*p,i=Math.floor(h);return xs[i]+(xs[Math.min(i+1,n-1)]-xs[i])*(h-i)};
+  Object.assign(v,{xs,q1:q(.25),med:q(.5),q3:q(.75),order:xs.map((x,i)=>({x,t:Math.random()*.9,i}))});
+}
+function overlaps(a,list){
+  return list.some(b=>b&&a.x<b.x+b.w+60&&a.x+a.w+60>b.x&&a.y<b.y+b.h+60&&a.y+a.h+60>b.y);
+}
+function spawn(i,now,delay){
+  const used=vigs.filter((v,j)=>v&&j!==i).map(v=>v.kind);
+  const pool=KINDS.filter(k=>!used.includes(k));
+  const kind=pool[Math.floor(Math.random()*pool.length)]||KINDS[i%3];
+  const size={hist:[rnd(190,280),rnd(95,140)],scatter:[rnd(150,215),rnd(115,155)],box:[rnd(210,300),rnd(48,62)]}[kind];
+  let v;
+  for(let tries=0;tries<14;tries++){
+    v={kind,w:size[0],h:size[1],x:rnd(16,Math.max(17,W-size[0]-16)),y:rnd(40,Math.max(41,H-size[1]-30))};
+    if(!overlaps(v,vigs.filter((_,j)=>j!==i)))break;
+  }
+  v.born=now+(delay||0);
+  v.build=rnd(7000,9500);
+  v.hold=rnd(5000,8000);
+  v.life=T_IN+v.build+v.hold+T_OUT;
+  ({hist:makeHist,scatter:makeScatter,box:makeBox})[kind](v);
+  return v;
 }
 
-// ── Scroll reveal ──
-const rObs = new IntersectionObserver(es => {
-  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); rObs.unobserve(e.target); } });
-}, { threshold: 0.05, rootMargin: '0px 0px -30px 0px' });
-
-const fObs = new IntersectionObserver(([e]) => {
-  document.getElementById('fab').classList.toggle('visible', !e.isIntersecting);
-}, { threshold: 0.1 });
-
-document.addEventListener('DOMContentLoaded', () => {
-  const c = document.querySelector(`.unit[data-unit="${CURRENT_UNIT}"]`);
-  if (c) c.classList.add('open');
-
-  // Progress bar
-  const curriculumUnits = C.filter(u => !u.special).length;
-  const done = Math.max(0, CURRENT_UNIT - 1);
-  document.getElementById('pf').style.width = Math.round((done / curriculumUnits) * 100) + '%';
-  document.getElementById('pt').textContent = `${done}/${curriculumUnits}`;
-
-  // Scroll reveal
-  document.querySelectorAll('.unit').forEach((u, i) => {
-    u.style.transitionDelay = `${i * 0.06}s`;
-    u.style.transitionDuration = '0.5s';
-    u.style.transitionTimingFunction = 'cubic-bezier(0.16, 1, 0.3, 1)';
-    u.style.transitionProperty = 'opacity, transform';
-    rObs.observe(u);
+/* 0..1 through the build, and the overall opacity for this moment */
+function phase(v,t){
+  const age=t-v.born;
+  if(v.fixed)return{p:1,f:1};
+  const f=age<T_IN?age/T_IN:age>v.life-T_OUT?(v.life-age)/T_OUT:1;
+  return{p:clamp01((age-T_IN*.4)/v.build),f:clamp01(f)};
+}
+function axis(v,f){
+  cx.strokeStyle=col(ALPHA*1.6*f);cx.lineWidth=1.2;cx.lineCap="round";
+  cx.beginPath();
+  if(v.kind==="scatter"){cx.moveTo(v.x,v.y);cx.lineTo(v.x,v.y+v.h);}
+  else cx.moveTo(v.x,v.y+v.h);
+  cx.lineTo(v.x+v.w,v.y+v.h);cx.stroke();
+}
+function label(text,x,y,f){
+  cx.font="italic "+MONO;cx.fillStyle=col(Math.min(ALPHA*3.2,.34)*f);cx.fillText(text,x,y);
+}
+function drawHist(v,p,f){
+  const base=v.y+v.h,dotP=p/.72,s=v.cell*.62;
+  v.dots.forEach(d=>{
+    const k=(dotP-d.t*.95)/.06;
+    if(k<=0)return;
+    const fall=easeIn(k);
+    const cxp=v.x+(d.b+.5)*v.cell;
+    const yEnd=base-(d.k+.5)*v.unit;
+    const y=v.y-18+(yEnd-v.y+18)*Math.min(fall,1);
+    cx.beginPath();cx.arc(cxp,y,Math.min(s,v.unit)*.42,0,Math.PI*2);
+    cx.fillStyle=col(ALPHA*2.3*f*Math.min(1,k*2));cx.fill();
   });
-
-  if (c) fObs.observe(c);
+  const cp=easeO((p-.74)/.2);
+  if(cp>0){
+    const peak=v.n*(v.span/v.bins)/Math.sqrt(2*Math.PI)*v.unit;
+    cx.beginPath();
+    for(let x=0;x<=v.w*cp;x+=3){
+      const z=x/v.w*v.span-v.span/2;
+      const y=base-peak*Math.exp(-z*z/2);
+      x===0?cx.moveTo(v.x+x,y):cx.lineTo(v.x+x,y);
+    }
+    cx.strokeStyle=col(Math.min(ALPHA*3,.36)*f);cx.lineWidth=2;cx.stroke();
+    if(cp>=1){
+      cx.setLineDash([3,4]);cx.beginPath();cx.moveTo(v.x+v.w/2,base);cx.lineTo(v.x+v.w/2,base-peak-6);
+      cx.strokeStyle=col(ALPHA*1.6*f);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);
+      label("μ",v.x+v.w/2-4,base-peak-12,f);
+    }
+  }
+}
+function drawScatter(v,p,f){
+  const px=x=>v.x+x*v.w,py=y=>v.y+v.h-y*v.h;
+  v.pts.forEach(pt=>{
+    const k=(p/.62-pt.t*.95)/.08;
+    if(k<=0)return;
+    const r=2.6*(1+.5*Math.max(0,1-k)*Math.min(1,k*3));
+    cx.beginPath();cx.arc(px(pt.x),py(pt.y),r,0,Math.PI*2);
+    cx.fillStyle=col(ALPHA*2.4*f*Math.min(1,k));cx.fill();
+  });
+  const lp=easeO((p-.66)/.24);
+  if(lp>0){
+    const x1=.02+.96*lp;
+    cx.beginPath();cx.moveTo(px(.02),py(v.a+v.b*.02));cx.lineTo(px(x1),py(v.a+v.b*x1));
+    cx.strokeStyle=col(Math.min(ALPHA*3,.36)*f);cx.lineWidth=2;cx.stroke();
+    if(lp>=1)label("r = "+v.r.toFixed(2).replace("-","−"),v.x+v.w-62,v.b>0?v.y+v.h-6:v.y+12,f);
+  }
+}
+function drawBox(v,p,f){
+  const px=x=>v.x+x*v.w,mid=v.y+v.h*.38,bh=v.h*.5;
+  v.order.forEach(o=>{
+    const k=(p/.45-o.t)/.1;
+    if(k<=0)return;
+    cx.beginPath();cx.arc(px(o.x),v.y+v.h-6+(o.i%2)*-4,2.1,0,Math.PI*2);
+    cx.fillStyle=col(ALPHA*2.1*f*Math.min(1,k));cx.fill();
+  });
+  const mp=easeO((p-.48)/.1),bp=easeO((p-.58)/.16),wp=easeO((p-.76)/.16);
+  cx.strokeStyle=col(Math.min(ALPHA*3,.36)*f);cx.lineWidth=1.8;
+  if(mp>0){cx.beginPath();cx.moveTo(px(v.med),mid-bh/2*mp);cx.lineTo(px(v.med),mid+bh/2*mp);cx.stroke()}
+  if(bp>0){
+    const l=px(v.med-(v.med-v.q1)*bp),r=px(v.med+(v.q3-v.med)*bp);
+    cx.strokeRect(l,mid-bh/2,r-l,bh);
+  }
+  if(wp>0){
+    cx.beginPath();
+    cx.moveTo(px(v.q1),mid);cx.lineTo(px(v.q1-(v.q1-v.xs[0])*wp),mid);
+    cx.moveTo(px(v.q3),mid);cx.lineTo(px(v.q3+(v.xs[v.xs.length-1]-v.q3)*wp),mid);
+    cx.stroke();
+    if(wp>=1){
+      [v.xs[0],v.xs[v.xs.length-1]].forEach(x=>{cx.beginPath();cx.moveTo(px(x),mid-bh*.22);cx.lineTo(px(x),mid+bh*.22);cx.stroke()});
+      label("IQR",(px(v.q1)+px(v.q3))/2-11,mid-bh/2-6,f);
+    }
+  }
+}
+function drawVig(v,t){
+  if(t<v.born)return true;
+  if(!v.fixed&&t-v.born>v.life)return false;
+  const{p,f}=phase(v,t);
+  if(f<=0)return true;
+  axis(v,f);
+  if(v.kind==="hist")drawHist(v,p,f);
+  else if(v.kind==="scatter")drawScatter(v,p,f);
+  else drawBox(v,p,f);
+  return true;
+}
+function draw(t){
+  cx.clearRect(0,0,W,H);
+  for(let i=0;i<vigs.length;i++){
+    if(!drawVig(vigs[i],t))vigs[i]=spawn(i,t,900+Math.random()*2600);
+  }
+}
+let bgRaf=0;
+function loop(now){draw(now);bgRaf=requestAnimationFrame(loop)}
+document.addEventListener("visibilitychange",()=>{
+  if(reduce)return;
+  if(document.hidden){cancelAnimationFrame(bgRaf);bgRaf=0}
+  else if(!bgRaf)bgRaf=requestAnimationFrame(loop);
 });
+sizeBg();bgColors();
+/* open mid-show: the first vignettes start at staggered stages */
+for(let i=0;i<N_VIGS;i++){
+  const v=spawn(i,performance.now(),0);
+  v.born-=v.life*i*.28;
+  vigs.push(v);
+}
+window.addEventListener("resize",()=>{sizeBg();if(reduce)drawStatic()});
+function drawStatic(){
+  vigs.forEach(v=>{v.fixed=true;v.born=-1e9});
+  draw(0);
+}
+if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
 </script>
 </body>
 </html>
