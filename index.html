@@ -62,7 +62,7 @@ a{color:inherit;text-decoration:none}
     radial-gradient(34% 36% at 78% 22%,rgba(var(--pal-in),.5),transparent 70%),
     radial-gradient(40% 38% at 72% 82%,rgba(var(--pal-cy),.4),transparent 70%),
     radial-gradient(30% 32% at 18% 86%,rgba(var(--pal-am),.3),transparent 70%);
-  animation:aurora 52s ease-in-out infinite alternate;transition:opacity .3s}
+  animation:aurora 52s ease-in-out infinite alternate;translate:var(--ax,0) var(--ay,0);transition:opacity .3s,translate .7s ease-out}
 @keyframes aurora{0%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(4%,-3%) rotate(7deg) scale(1.08)}100%{transform:translate(-3%,3%) rotate(-6deg) scale(1.04)}}
 /* The cursor is a data point (see the script at the end): an SVG overlay above everything */
 #vcur{position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:1000;pointer-events:none;overflow:visible;display:none;opacity:0;transition:opacity .2s}
@@ -789,7 +789,13 @@ render();renderEssentials();renderHero();syncBtn();
    and are replaced, and drift gently with the scroll. Behind them an
    aurora of the same colours breathes (#aurora, CSS). No clicks. */
 const cv=document.getElementById("bg"),cx=cv.getContext("2d");
-let W,H,DPR,ALPHA=.13,SCY=0;
+let W,H,DPR,ALPHA=.13,SCY=0,MX=-1e4,MY=-1e4;
+/* the pointer: vignettes near it brighten and swell a little, and the aurora drifts with it */
+if(window.matchMedia("(hover:hover) and (pointer:fine)").matches&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+  document.addEventListener("mousemove",e=>{MX=e.clientX;MY=e.clientY;
+    document.documentElement.style.setProperty("--ax",((MX-W/2)*.04).toFixed(1)+"px");document.documentElement.style.setProperty("--ay",((MY-H/2)*.04).toFixed(1)+"px")},{passive:true});
+  document.documentElement.addEventListener("mouseleave",()=>{MX=MY=-1e4});
+}
 const PAL={};
 const reduce=REDUCE;
 const MONO="11px 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace";
@@ -1156,8 +1162,10 @@ function drawVig(v,t){
   const hold=v.fixed?4000:Math.max(0,age-T_IN*.4-v.build);
   /* parallax: the scene drifts up a tenth as fast as the page, wrapping */
   const span=H+v.h+80,yy=(((v.y-SCY*.1)+v.h+40)%span+span)%span-v.h-40;
+  const cxp=v.x+v.w/2,cyp=yy+v.h/2,d=Math.hypot(MX-cxp,MY-cyp),q=clamp01(1-d/240),prox=q*q*(3-2*q);
   cx.save();cx.translate(0,yy-v.y);
-  DRAW[v.kind](v,p,f,hold,age);
+  if(prox>0){cx.translate(cxp,v.y+v.h/2);cx.scale(1+.1*prox,1+.1*prox);cx.translate(-cxp,-(v.y+v.h/2))}
+  DRAW[v.kind](v,p,Math.min(1.5,f*(1+.55*prox)),hold,age);
   cx.restore();
   return true;
 }
