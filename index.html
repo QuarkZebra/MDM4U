@@ -1275,8 +1275,8 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     /* samples along the path */
     if(sp>.8&&!hide&&Math.hypot(mx-ldx,my-ldy)>=10){drop(mx,my,c,1400);ldx=mx;ldy=my}
     /* a hard stop after a fast run: a normal cloud */
-    pk=Math.max(sp,pk*.9);
-    if(pk>30&&sp<4&&!burst){
+    pk=Math.max(sp,pk*.94);
+    if(pk>26&&sp<5&&!burst){
       burst=true;
       for(let i=0;i<24;i++)drop(mx,my,c,900,gauss()*3.2,gauss()*3.2,2.2);
     }
