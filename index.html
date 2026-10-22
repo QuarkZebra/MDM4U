@@ -1237,6 +1237,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     if(!raf)raf=requestAnimationFrame(tick);
   },{passive:true});
   document.addEventListener("mouseover",e=>{
+    if(!e.target||!e.target.closest)return;
     const t=e.target.closest(SEL);
     hide=!!e.target.closest("input,textarea,select");
     if(t!==tgt){
