@@ -79,6 +79,10 @@ body.vc #vcur{display:block}
 #vcur .die rect{rx:4;ry:4;stroke-width:1.5}
 #vcur .die .pips circle{fill:var(--bg)}
 #vcur text{font-family:var(--mono);font-size:10px;font-weight:600;paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round;transition:opacity .15s}
+#vcur .skull,#vcur .haz{opacity:0;transition:opacity .12s;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.page.shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes shake{10%,90%{transform:translate(-2px,1px)}20%,80%{transform:translate(4px,-2px)}30%,50%,70%{transform:translate(-6px,3px)}40%,60%{transform:translate(6px,-2px)}}
+#vcur.warn .dotc,#vcur.warn .ring,#vcur.warn .die,#vcur.warn .bell,#vcur.warn .bellfill,#vcur.warn .fit,#vcur.warn text{opacity:0!important}
 @media(hover:hover) and (pointer:fine){body.vc,body.vc *{cursor:none!important}body.vc input,body.vc textarea{cursor:auto!important}}
 .page{max-width:1080px;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative;z-index:1}
 
@@ -460,7 +464,7 @@ function ico(name,cls){
 }
 
 /* ══════════ Link rendering ══════════ */
-const WARN=ico("skull","skull")+'<span>Do not look if you haven’t done the practice</span><button class="tgo" type="button">Continue</button>';
+const WARN='<span>Do not look if you haven’t done the practice</span><button class="tgo" type="button">Continue</button>';
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
 function live(t,url,cls,icon,warn){
   const a=`<a class="dlink ${cls}" href="${esc(url)}" target="_blank" rel="noopener"${warn?' data-warn':''}>${ico(icon)}<span class="lt">${t}</span></a>`;
@@ -616,7 +620,7 @@ function renderEssentials(){
   el.innerHTML=list.map(e=>{
     const[t,url,kind,warn]=e;
     const a=`<a href="${esc(url)}" target="_blank" rel="noopener"${warn?' data-warn':''}>${ico(ICO[kind]||"arrow")}<span>${t}</span></a>`;
-    return warn?`<span class="tipwrap">${a}<span class="tip hazard">${ico("haz","haz")}<span>${esc(warn)}</span><button class="tgo" type="button">Continue</button></span></span>`:a;
+    return warn?`<span class="tipwrap">${a}<span class="tip hazard"><span>${esc(warn)}</span><button class="tgo" type="button">Continue</button></span></span>`:a;
   }).join("");
 }
 
@@ -1377,6 +1381,45 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
   }
   if(!REDUCE)setTimeout(wave,1500);
   head.addEventListener("mouseenter",wave);
+})();
+
+/* ══════════ Warning pointers (standalone, for the sites with their own cursor) ══════════
+   Over an answer key the pointer becomes a red skull and crossbones and the
+   page shakes on arrival; over a hazard-warned pill (the calculator list) it
+   becomes the warning triangle. The site's own cursor glyph hides while
+   #vcur carries the "warn" class. */
+(function(){
+  if(!window.matchMedia("(hover:hover) and (pointer:fine)").matches||(typeof REDUCE!=="undefined"&&REDUCE))return;
+  const svg=document.getElementById("vcur");if(!svg)return;
+  const NS="http://www.w3.org/2000/svg",SEL='a,button,[role="link"],.dlink.pend,.tipwrap',ANS='.dlink.ans,.xans,.btn[data-warn]',HAZ='.ess a[data-warn]';
+  const mk=(parent,tag,attrs)=>{const el=document.createElementNS(NS,tag);for(const a in attrs)el.setAttribute(a,attrs[a]);parent.appendChild(el);return el};
+  const sk=mk(svg,"g",{class:"skull"});
+  const skBody=[mk(sk,"rect",{x:-13,y:-2,width:26,height:3.6,rx:1.8,transform:"rotate(45)"}),mk(sk,"rect",{x:-13,y:-2,width:26,height:3.6,rx:1.8,transform:"rotate(-45)"}),
+    ...[[-9.2,-9.2],[9.2,9.2],[-9.2,9.2],[9.2,-9.2]].map(([x,y])=>mk(sk,"circle",{cx:x,cy:y,r:2.4})),mk(sk,"circle",{cx:0,cy:-2.2,r:7.2}),mk(sk,"rect",{x:-4.4,y:2.6,width:8.8,height:5.2,rx:1.6})];
+  const skHoles=[mk(sk,"circle",{cx:-2.7,cy:-3,r:2}),mk(sk,"circle",{cx:2.7,cy:-3,r:2}),mk(sk,"path",{d:"M0 0.2L-1.2 2.2H1.2Z"}),mk(sk,"rect",{x:-3.2,y:4.6,width:1.1,height:2.4}),mk(sk,"rect",{x:-.55,y:4.6,width:1.1,height:2.4}),mk(sk,"rect",{x:2.1,y:4.6,width:1.1,height:2.4})];
+  const hz=mk(svg,"g",{class:"haz"}),tri=mk(hz,"path",{d:"M0 -11.5L12 9.5H-12Z","stroke-linejoin":"round","stroke-width":3}),bar=mk(hz,"rect",{x:-1.5,y:-4,width:3,height:7.5,rx:1.2}),dotEl=mk(hz,"circle",{cx:0,cy:6.3,r:1.7});
+  let tgt=null,mode="",n=0,bg="",red="",amber="";
+  function colours(){const cs=getComputedStyle(document.documentElement);bg=cs.getPropertyValue("--bg").trim();red=cs.getPropertyValue("--ans").trim()||"#cc3344";amber=cs.getPropertyValue("--haz-fg").trim()||"#9a5a00"}
+  function show(x,y){
+    if(!n--){n=60;colours()}
+    if(mode==="ans"){sk.setAttribute("transform",`translate(${x} ${y}) scale(1.15)`);sk.style.opacity=1;skBody.forEach(el=>el.setAttribute("fill",red));skHoles.forEach(el=>el.setAttribute("fill",bg));hz.style.opacity=0}
+    else if(mode==="haz"){hz.setAttribute("transform",`translate(${x} ${y})`);hz.style.opacity=1;tri.setAttribute("fill",amber);tri.setAttribute("stroke",amber);bar.setAttribute("fill",bg);dotEl.setAttribute("fill",bg);sk.style.opacity=0}
+    else{sk.style.opacity=0;hz.style.opacity=0}
+    svg.classList.toggle("warn",!!mode);
+  }
+  document.addEventListener("mouseover",e=>{
+    if(!e.target||!e.target.closest)return;
+    const t=e.target.closest(SEL);
+    if(t===tgt)return;
+    tgt=t;const m=t&&t.matches(ANS)?"ans":t&&t.matches(HAZ)?"haz":"";
+    if(m==="ans"&&mode!=="ans"){const pg=document.querySelector(".page");pg.classList.remove("shake");void pg.offsetWidth;pg.classList.add("shake")}
+    mode=m;show(e.clientX,e.clientY);
+  });
+  document.addEventListener("mousemove",e=>{
+    if(tgt){const r=tgt.getBoundingClientRect();if(e.clientX<r.left-6||e.clientX>r.right+6||e.clientY<r.top-6||e.clientY>r.bottom+6){tgt=null;mode=""}}
+    show(e.clientX,e.clientY);
+  },{passive:true});
+  document.documentElement.addEventListener("mouseleave",()=>{tgt=null;mode="";show(-100,-100)});
 })();
 </script>
 </body>
