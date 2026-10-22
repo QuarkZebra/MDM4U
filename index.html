@@ -356,6 +356,17 @@ body.armed .fab{opacity:0;visibility:hidden;pointer-events:none;transform:transl
 @keyframes sheen{0%{opacity:1;background-position:120% 0}100%{opacity:1;background-position:-20% 0}}
 .ess.wave a,.hacts.wave .hbtn{animation:bob .55s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--j,0)*90ms)}
 @keyframes bob{0%{transform:none}45%{transform:translateY(-7px) scale(1.07);box-shadow:0 0 0 3px var(--accent-dim)}100%{transform:none}}
+/* Links: bolder on hover, no underline. The label is repeated in an invisible zero-height
+   block at the hover weight, so a link already has its bold width and nothing beside it shifts. */
+.dlink .lt{background:none;padding-bottom:0}
+.dlink .lt::after{content:attr(data-t);display:block;height:0;overflow:hidden;visibility:hidden;font-weight:800}
+.dlink.vid .lt::after,.dlink.doc .lt::after,.dlink.ans .lt::after{font-weight:700}
+@media(hover:hover){
+  .dlink:hover,.dlink.ans:hover{opacity:1}
+  .dlink:hover .lt{font-weight:800}
+  .dlink.vid:hover .lt,.dlink.doc:hover .lt,.dlink.ans:hover .lt{font-weight:700}
+  .dlink.pend:hover .lt{font-weight:inherit}
+}
 </style>
 </head>
 <body>
@@ -467,7 +478,7 @@ function ico(name,cls){
 const WARN='<span>Do not look if you haven’t done the practice</span><button class="tgo" type="button">Continue</button>';
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
 function live(t,url,cls,icon,warn){
-  const a=`<a class="dlink ${cls}" href="${esc(url)}" target="_blank" rel="noopener"${warn?' data-warn':''}>${ico(icon)}<span class="lt">${t}</span></a>`;
+  const a=`<a class="dlink ${cls}" href="${esc(url)}" target="_blank" rel="noopener"${warn?' data-warn':''}>${ico(icon)}<span class="lt" data-t="${esc(t)}">${t}</span></a>`;
   return warn?`<span class="tipwrap">${a}<span class="tip warn">${WARN}</span></span>`:a;
 }
 function pend(t,icon){
