@@ -338,6 +338,20 @@ body.armed .fab{opacity:0;visibility:hidden;pointer-events:none;transform:transl
 @media (prefers-reduced-motion: reduce){
   *{transition:none!important;animation:none!important}
 }
+/* The links at the top: lift, sheen and a ring on hover; a wave on arrival */
+.ess a,.hbtn{position:relative}
+.ess a::before,.hbtn::before{content:"";position:absolute;inset:-3px;border-radius:inherit;border:2px solid var(--accent);opacity:0;pointer-events:none}
+.ess a::after,.hbtn::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%);background-size:300% 100%;background-position:120% 0}
+@media(hover:hover){
+  .ess a:hover,.hbtn:hover{transform:translateY(-2px) scale(1.05);border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim),0 8px 20px rgba(0,0,0,.14)}
+  .ess a:hover::before,.hbtn:hover::before{animation:ping .8s ease-out}
+  .ess a:hover::after,.hbtn:hover::after{animation:sheen .8s ease-out}
+}
+@keyframes ping{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.35)}}
+@keyframes sheen{0%{opacity:1;background-position:120% 0}100%{opacity:1;background-position:-20% 0}}
+.ess.wave a,.hacts.wave .hbtn{animation:bob .55s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--j,0)*90ms)}
+@keyframes bob{0%{transform:none}45%{transform:translateY(-7px) scale(1.07);box-shadow:0 0 0 3px var(--accent-dim)}100%{transform:none}}
 </style>
 </head>
 <body>
@@ -1227,6 +1241,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
   }
   const gauss=()=>{let s=0;for(let i=0;i<6;i++)s+=Math.random();return (s-3)/Math.SQRT1_2};
   function Phi(z){const t=1/(1+.2316419*Math.abs(z)),d=.3989423*Math.exp(-z*z/2);const p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p}
+  function burstAt(x,y){last=last||performance.now();for(let i=0;i<24;i++)drop(x,y,accent(),900,gauss()*3.2,gauss()*3.2,2.2)}
   let mx=-100,my=-100,px=mx,py=my,vx=0,vy=0,boost=0,ldx=-1e9,ldy=-1e9,pk=0,burst=false,rollT=0,faceN=5,lastFace=0;
   let seen=false,tgt=null,tcol="",kind="",hide=false,raf=0,last=0,acc="",accN=0;
   function accent(){
@@ -1248,6 +1263,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     if(!e.target||!e.target.closest)return;
     const t=e.target.closest(SEL);
     hide=!!e.target.closest("input,textarea,select");
+    if(t&&t!==tgt&&t.closest("header"))burstAt(e.clientX,e.clientY);   // a top-of-page control: the burst says hello
     if(t!==tgt){
       tgt=t;
       tcol=t&&t.matches(".dlink,.xans,.ess a,.btn,.tgo")?getComputedStyle(t).color:"";
@@ -1284,10 +1300,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     if(sp>.8&&!hide&&Math.hypot(mx-ldx,my-ldy)>=10){drop(mx,my,c,1400);ldx=mx;ldy=my}
     /* a hard stop after a fast run: a normal cloud */
     pk=Math.max(sp,pk*.94);
-    if(pk>26&&sp<5&&!burst){
-      burst=true;
-      for(let i=0;i<24;i++)drop(mx,my,c,900,gauss()*3.2,gauss()*3.2,2.2);
-    }
+    if(pk>26&&sp<5&&!burst){burst=true;burstAt(mx,my)}
     if(pk<10)burst=false;
     let n=0,sx=0,sy=0;
     for(let i=live.length-1;i>=0;i--){
@@ -1345,6 +1358,25 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     svg.classList.toggle("hid",hide);
     if(svg.classList.contains("on"))raf=requestAnimationFrame(tick);
   }
+})();
+
+/* ══════════ The links at the top wave hello ══════════
+   The course-essentials pills and the Dark / Expand All / ? buttons bob in
+   a quick wave once the page has settled, and again whenever the pointer
+   comes up into the header (at most every eight seconds), so they are
+   hard to miss. Hover polish (lift, sheen, ring) is CSS. */
+(function(){
+  const ess=document.getElementById("ess"),hacts=document.querySelector(".hacts"),head=document.querySelector("header");
+  if(!ess||!hacts||!head)return;
+  [...ess.children].forEach((a,i)=>a.style.setProperty("--j",i));
+  [...hacts.querySelectorAll(".hbtn")].forEach((b,i)=>b.style.setProperty("--j",i));
+  let last=-1e9;
+  function wave(){
+    const now=performance.now();if(now-last<8000)return;last=now;
+    [ess,hacts].forEach(el=>{el.classList.remove("wave");void el.offsetWidth;el.classList.add("wave")});
+  }
+  if(!REDUCE)setTimeout(wave,1500);
+  head.addEventListener("mouseenter",wave);
 })();
 </script>
 </body>
