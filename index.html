@@ -1409,7 +1409,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     ...[[-9.2,-9.2],[9.2,9.2],[-9.2,9.2],[9.2,-9.2]].map(([x,y])=>mk(sk,"circle",{cx:x,cy:y,r:2.4})),mk(sk,"circle",{cx:0,cy:-2.2,r:7.2}),mk(sk,"rect",{x:-4.4,y:2.6,width:8.8,height:5.2,rx:1.6})];
   const skHoles=[mk(sk,"circle",{cx:-2.7,cy:-3,r:2}),mk(sk,"circle",{cx:2.7,cy:-3,r:2}),mk(sk,"path",{d:"M0 0.2L-1.2 2.2H1.2Z"}),mk(sk,"rect",{x:-3.2,y:4.6,width:1.1,height:2.4}),mk(sk,"rect",{x:-.55,y:4.6,width:1.1,height:2.4}),mk(sk,"rect",{x:2.1,y:4.6,width:1.1,height:2.4})];
   const hz=mk(svg,"g",{class:"haz"}),tri=mk(hz,"path",{d:"M0 -11.5L12 9.5H-12Z","stroke-linejoin":"round","stroke-width":3}),bar=mk(hz,"rect",{x:-1.5,y:-4,width:3,height:7.5,rx:1.2}),dotEl=mk(hz,"circle",{cx:0,cy:6.3,r:1.7});
-  let tgt=null,mode="",n=0,bg="",red="",amber="";
+  let tgt=null,mode="",n=0,bg="",red="",amber="",shakeT=-1e9;
   function colours(){const cs=getComputedStyle(document.documentElement);bg=cs.getPropertyValue("--bg").trim();red=cs.getPropertyValue("--ans").trim()||"#cc3344";amber=cs.getPropertyValue("--haz-fg").trim()||"#9a5a00"}
   function show(x,y){
     if(!n--){n=60;colours()}
@@ -1423,7 +1423,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     const t=e.target.closest(SEL);
     if(t===tgt)return;
     tgt=t;const m=t&&t.matches(ANS)?"ans":t&&t.matches(HAZ)?"haz":"";
-    if(m==="ans"&&mode!=="ans"){const pg=document.querySelector(".page");pg.classList.remove("shake");void pg.offsetWidth;pg.classList.add("shake")}
+    if(m==="ans"&&mode!=="ans"&&performance.now()-shakeT>1500){shakeT=performance.now();const pg=document.querySelector(".page");pg.classList.remove("shake");void pg.offsetWidth;pg.classList.add("shake")}   // once: the shake moves the link out from under the pointer and back, so a cooldown stops it re-triggering itself
     mode=m;show(e.clientX,e.clientY);
   });
   document.addEventListener("mousemove",e=>{
