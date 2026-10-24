@@ -1272,7 +1272,8 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
   }
   document.addEventListener("mousemove",e=>{
     mx=e.clientX;my=e.clientY;
-    if(!seen){seen=true;px=mx;py=my;ldx=mx;ldy=my;document.body.classList.add("vc");svg.classList.add("on")}
+    if(!seen){seen=true;px=mx;py=my;ldx=mx;ldy=my;document.body.classList.add("vc")}
+    svg.classList.add("on");   /* every move shows the overlay: a blur (a note opening in a new tab) hides it, and coming back without crossing the window edge fires no mouseenter */
     if(!raf)raf=requestAnimationFrame(tick);
   },{passive:true});
   document.addEventListener("mouseover",e=>{
@@ -1291,6 +1292,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
   document.documentElement.addEventListener("mouseleave",()=>{svg.classList.remove("on");tgt=null});
   document.documentElement.addEventListener("mouseenter",()=>{if(seen){svg.classList.add("on");if(!raf)raf=requestAnimationFrame(tick)}});
   window.addEventListener("blur",()=>svg.classList.remove("on"));
+  window.addEventListener("focus",()=>{if(seen){svg.classList.add("on");if(!raf)raf=requestAnimationFrame(tick)}});
   document.addEventListener("mousedown",()=>svg.classList.add("dn"));
   document.addEventListener("mouseup",()=>svg.classList.remove("dn"));
   function tick(now){
