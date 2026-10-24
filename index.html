@@ -367,6 +367,10 @@ body.armed .fab{opacity:0;visibility:hidden;pointer-events:none;transform:transl
   .dlink.vid:hover .lt,.dlink.doc:hover .lt,.dlink.ans:hover .lt{font-weight:700}
   .dlink.pend:hover .lt{font-weight:inherit}
 }
+/* A quiet way home: mathbrown.com in the top bar, styled as one more mono label (23 Oct 2026) */
+.top-bar .home{text-transform:none;letter-spacing:.04em;text-decoration:none;color:var(--t3);opacity:.7;padding-right:.8rem;border-right:1px solid var(--bdr2);transition:opacity .15s,color .15s}
+.top-bar .home:hover{opacity:1;color:var(--accent)}
+@media(max-width:640px){.top-bar .lbl:not(.home){display:none}}
 </style>
 </head>
 <body>
@@ -375,6 +379,7 @@ body.armed .fab{opacity:0;visibility:hidden;pointer-events:none;transform:transl
 <svg id="vcur" aria-hidden="true"><g class="ghosts"></g><line class="fit"/><path class="bellfill"/><path class="bell"/><g class="die"><rect x="-10" y="-10" width="20" height="20"/><g class="pips"></g></g><circle class="ring" r="10"/><circle class="dotc" r="4.5"/><text></text></svg>
 <div class="page">
   <div class="top-bar" style="--i:0">
+    <a class="lbl home" href="https://mathbrown.com/">mathbrown.com</a>
     <span class="lbl">Course</span>
     <div class="ptrack"><div class="pfill" id="pf"></div></div>
     <span class="ptxt" id="pt"></span>
