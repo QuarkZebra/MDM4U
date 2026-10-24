@@ -1420,7 +1420,7 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     const t=e.target.closest(SEL);
     if(t===tgt)return;
     tgt=t;const m=t&&t.matches(ANS)?"ans":t&&t.matches(HAZ)?"haz":"";
-    if(m==="ans"&&mode!=="ans"&&performance.now()-shakeT>1500){shakeT=performance.now();const pg=document.querySelector(".page");pg.classList.remove("shake");void pg.offsetWidth;pg.classList.add("shake")}   // once: the shake moves the link out from under the pointer and back, so a cooldown stops it re-triggering itself
+    if(m==="ans"&&mode!=="ans"&&performance.now()-shakeT>550){shakeT=performance.now();const pg=document.querySelector(".page");pg.classList.remove("shake");void pg.offsetWidth;pg.classList.add("shake")}   // once: the shake moves the link out from under the pointer and back, so a cooldown stops it re-triggering itself
     mode=m;show(e.clientX,e.clientY);
   });
   document.addEventListener("mousemove",e=>{
