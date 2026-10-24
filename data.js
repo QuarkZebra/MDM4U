@@ -67,7 +67,7 @@ const COURSE = {
               ["Prerequisite Skills", D("1Zz14t6jUqb3VmGTxKQOE3_mpxMzM69oF"), "skills"]]},
     {d:2, iso:"2027-02-02", topic:"Types of Data", num:"1.1",
       note:D("10dxcF10OzzQT_tIPsdTqnUpDTmjOHBxm"),
-      ans:"", /* key: D("1vPRA_gKzDDYbr4xfdvNtYVYO5Ra4beoR") */
+      ans:D("1vPRA_gKzDDYbr4xfdvNtYVYO5Ra4beoR"), /* key: D("1vPRA_gKzDDYbr4xfdvNtYVYO5Ra4beoR") */
       extras:[["Spurious Correlations", "https://www.tylervigen.com/spurious-correlations", "doc"]]},
     {d:3, iso:"2027-02-03", topic:"Sampling Methods", num:"1.2",
       note:D("1F_YM9PR02ysRHzbjwZY0fGxg3L6Ij1NI"),

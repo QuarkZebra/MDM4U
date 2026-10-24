@@ -1228,9 +1228,10 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
 
 /* ══════════ The cursor is a data point ══════════
    On a mouse-and-trackpad machine the pointer becomes a dot with a ring.
-   As it moves it drops sample points along its path; move fast and a dashed
-   line of best fit runs through them with a live r. Stop hard after a fast
-   run and a normal cloud of points scatters from the tip. Over a link it
+   As it moves it drops sample points along its path, and nothing else: no
+   line is drawn while the pointer moves (the fast-move line of best fit
+   with its r went on 23 Oct 2026). Stop hard after a fast run and a normal
+   cloud of points scatters from the tip. Over a link it
    grows, takes the link's colour, and shows its subject: on a statistics
    link a normal curve draws under the link, shading up to the pointer with
    z and P(Z < z) read out; on a probability link the dot becomes a die
@@ -1317,26 +1318,15 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
     pk=Math.max(sp,pk*.94);
     if(pk>26&&sp<5&&!burst){burst=true;burstAt(mx,my)}
     if(pk<10)burst=false;
-    let n=0,sx=0,sy=0;
     for(let i=live.length-1;i>=0;i--){
       const g=live[i],age=now-g.born;
       if(age>g.life){g.el.style.opacity=0;live.splice(i,1);pool.push(g);continue}
       const t=age/g.life;g.x+=g.vx;g.y+=g.vy;g.vx*=.9;g.vy*=.9;
       g.el.setAttribute("cx",g.x);g.el.setAttribute("cy",g.y);
       g.el.style.opacity=(1-t)*.7;
-      if(!g.vx&&!g.vy){n++;sx+=g.x;sy+=g.y}
     }
-    /* fast: the line of best fit through the samples, with r */
-    let rr=null;
-    if(fast>0&&n>=8){
-      const mxx=sx/n,myy=sy/n;let sxx=0,syy=0,sxy=0;
-      live.forEach(g=>{if(g.vx||g.vy)return;const a=g.x-mxx,b=g.y-myy;sxx+=a*a;syy+=b*b;sxy+=a*b});
-      rr=Math.min(sxx,syy)<4?(sxy<0?-1:1):sxy/Math.sqrt(sxx*syy);
-      const th=.5*Math.atan2(2*sxy,sxx-syy),L=Math.sqrt(Math.max(sxx,syy)/n)*2.6+20;
-      fit.setAttribute("x1",mxx-Math.cos(th)*L);fit.setAttribute("y1",myy-Math.sin(th)*L);
-      fit.setAttribute("x2",mxx+Math.cos(th)*L);fit.setAttribute("y2",myy+Math.sin(th)*L);
-      fit.setAttribute("stroke",c);fit.style.opacity=fast*.8;
-    }else fit.style.opacity=0;
+    fit.style.opacity=0;   /* no line while moving (23 Oct 2026) */
+    const rr=null;
     /* statistics link: the link is a normal distribution */
     let z=null;
     if(kind==="stat"&&on&&r){
