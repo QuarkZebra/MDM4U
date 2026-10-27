@@ -372,6 +372,7 @@ body.armed .fab{opacity:0;visibility:hidden;pointer-events:none;transform:transl
 .top-bar .home:hover{opacity:1;color:var(--accent)}
 @media(max-width:640px){.top-bar .lbl:not(.home){display:none}}
 </style>
+<link rel="stylesheet" href="games.css">
 </head>
 <body>
 <div id="aurora" aria-hidden="true"></div>
@@ -1430,5 +1431,6 @@ if(reduce)drawStatic();else bgRaf=requestAnimationFrame(loop);
   document.documentElement.addEventListener("mouseleave",()=>{tgt=null;mode="";show(-100,-100)});
 })();
 </script>
+<script src="games.js" defer></script>
 </body>
 </html>

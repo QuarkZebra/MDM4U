@@ -1,0 +1,67 @@
+/* ══════════ Background games (shared) ══════════
+   Clicking a background vignette opens a short game on the same idea.
+   The overlay sits under the cursor layer (z 1000) so the site's cursor stays. */
+#gm{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:1rem;
+  background:rgba(var(--bgrgb,246,248,251),.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:gmin .22s ease-out both}
+#gm[hidden]{display:none}
+@keyframes gmin{from{opacity:0}to{opacity:1}}
+.gm-card{width:min(680px,100%);max-height:calc(100vh - 2rem);overflow:auto;background:rgba(var(--sf),.92);border:1px solid var(--bdr2);
+  border-radius:14px;box-shadow:0 12px 48px rgba(0,0,0,.18);padding:1rem 1.15rem 1rem;position:relative;animation:gmcard .28s cubic-bezier(.2,.8,.3,1.1) both}
+@keyframes gmcard{from{transform:translateY(14px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.gm-card:focus{outline:none}
+.gm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;margin-bottom:.5rem}
+.gm-kicker{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.gm-card h2{font-size:1.25rem;font-weight:700;letter-spacing:-.02em;margin:.1rem 0 .15rem;line-height:1.15}
+.gm-how{font-size:.8rem;color:var(--t3);margin:0;line-height:1.4}
+.gm-x{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--bdr2);background:rgba(var(--sf),.8);color:var(--t2);font-size:1.1rem;line-height:1;cursor:pointer}
+.gm-x:hover{border-color:var(--accent-bdr);color:var(--accent)}
+.gm-q{font-size:.98rem;color:var(--ink);margin:.35rem 0 .5rem;line-height:1.45;min-height:1.4em}
+.gm-q b{color:var(--accent)}
+.gm-q code,.gm-ui code{font-family:var(--mono);font-size:.92em;background:var(--accent-dim);padding:.05em .3em;border-radius:4px}
+.gm-cv{display:block;width:100%;border-radius:10px;border:1px solid var(--bdr);background:rgba(var(--sf),.55);touch-action:manipulation}
+.gm-cv.tap{cursor:crosshair}
+.gm-cv[hidden]{display:none}
+.gm-ui{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.65rem;min-height:2.3rem}
+.gm-ui.grid{display:grid;grid-template-columns:1fr 1fr}
+.gm-ui.grid.one{grid-template-columns:1fr}
+.gm-ch{font-family:var(--mono);font-size:.84rem;text-align:left;padding:.5rem .7rem;border-radius:9px;border:1px solid var(--bdr2);
+  background:rgba(var(--sf),.8);color:var(--ink);cursor:pointer;transition:transform .12s,border-color .12s,background .12s;line-height:1.35}
+.gm-ch:hover:not(:disabled){border-color:var(--accent-bdr);transform:translateY(-1px)}
+.gm-ch:disabled{cursor:default;opacity:.85}
+.gm-ch .k{display:inline-block;width:1.2em;color:var(--t4);font-size:.72em}
+.gm-ch.ok{border-color:var(--done);background:rgba(31,138,99,.12);color:var(--done)}
+.gm-ch.no{border-color:var(--warn-fg);background:var(--warn-bg);color:var(--warn-fg)}
+.gm-ch.pick{box-shadow:0 0 0 2px var(--accent-bdr)}
+.gm-in{font-family:var(--mono);font-size:.95rem;padding:.45rem .7rem;border-radius:9px;border:1px solid var(--bdr2);background:rgba(var(--sf),.9);color:var(--ink);
+  min-width:9rem;flex:1;outline:none}
+.gm-in:focus{border-color:var(--accent-bdr);box-shadow:0 0 0 3px var(--accent-dim)}
+.gm-in.ok{border-color:var(--done);color:var(--done)}
+.gm-in.no{border-color:var(--warn-fg);color:var(--warn-fg)}
+.gm-pre{font-family:var(--mono);font-size:.8rem;display:inline-flex;align-items:center;color:var(--t2)}
+.gm-btn{font-family:var(--mono);font-size:.74rem;font-weight:600;padding:.5rem .95rem;border-radius:9px;border:1px solid var(--accent-bdr);
+  background:var(--accent);color:#fff;cursor:pointer;transition:transform .12s,filter .12s;white-space:nowrap}
+.gm-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.gm-btn.ghost{background:rgba(var(--sf),.8);color:var(--t2);border-color:var(--bdr2)}
+.gm-sl{display:flex;flex-direction:column;gap:.2rem;flex:1;min-width:10rem}
+.gm-sl label{font-family:var(--mono);font-size:.72rem;color:var(--t2);display:flex;justify-content:space-between}
+.gm-sl label b{color:var(--accent);font-weight:600}
+.gm-sl input[type=range]{width:100%;accent-color:var(--accent)}
+.gm-fb{font-family:var(--mono);font-size:.8rem;margin-top:.6rem;min-height:1.3em;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;line-height:1.4}
+.gm-fb.ok{color:var(--done)}.gm-fb.no{color:var(--warn-fg)}.gm-fb.mid{color:var(--haz-fg)}
+.gm-fb .gm-btn{margin-left:auto}
+.gm-foot{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--bdr);font-family:var(--mono);font-size:.66rem;color:var(--t3);letter-spacing:.04em}
+.gm-foot b{color:var(--ink);font-weight:600}
+.gm-foot .gm-streak b{color:var(--accent)}
+.gm-end{text-align:center;padding:1.2rem 0 .6rem}
+.gm-end .big{font-size:2.4rem;font-weight:700;letter-spacing:-.03em;color:var(--accent);line-height:1}
+.gm-end .sub{font-family:var(--mono);font-size:.74rem;color:var(--t3);margin:.5rem 0 1rem}
+.gm-end .acts{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.gm-end .acts .pb{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:center;width:100%;margin-top:.8rem}
+.gm-end .acts .pb .gm-btn{font-size:.66rem;padding:.35rem .7rem}
+.gm-pop{animation:gmpop .35s ease-out}
+@keyframes gmpop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+/* the hint at the foot of the page, and the game list it opens */
+.gm-hint{margin-top:2.2rem;text-align:center;font-family:var(--mono);font-size:.64rem;color:var(--t3);letter-spacing:.03em;line-height:1.7}
+.gm-hint button{font:inherit;color:var(--t2);background:none;border:none;border-bottom:1px dotted var(--t4);padding:0 .1em;cursor:pointer}
+.gm-hint button:hover{color:var(--accent);border-bottom-color:var(--accent)}
+@media(max-width:560px){.gm-hint{padding-bottom:3.4rem}.gm-card{padding:.8rem .8rem}.gm-ui.grid{grid-template-columns:1fr}.gm-foot{gap:.6rem}}
