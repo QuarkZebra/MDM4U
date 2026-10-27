@@ -60,8 +60,4 @@
 .gm-end .acts .pb .gm-btn{font-size:.66rem;padding:.35rem .7rem}
 .gm-pop{animation:gmpop .35s ease-out}
 @keyframes gmpop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
-/* the hint at the foot of the page, and the game list it opens */
-.gm-hint{margin-top:2.2rem;text-align:center;font-family:var(--mono);font-size:.64rem;color:var(--t3);letter-spacing:.03em;line-height:1.7}
-.gm-hint button{font:inherit;color:var(--t2);background:none;border:none;border-bottom:1px dotted var(--t4);padding:0 .1em;cursor:pointer}
-.gm-hint button:hover{color:var(--accent);border-bottom-color:var(--accent)}
-@media(max-width:560px){.gm-hint{padding-bottom:3.4rem}.gm-card{padding:.8rem .8rem}.gm-ui.grid{grid-template-columns:1fr}.gm-foot{gap:.6rem}}
+@media(max-width:560px){.gm-card{padding:.8rem .8rem}.gm-ui.grid{grid-template-columns:1fr}.gm-foot{gap:.6rem}}

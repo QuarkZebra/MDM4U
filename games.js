@@ -449,7 +449,7 @@ window.GM={open:start,games:GAMES,close};
 
 /* ── the hook: which vignette is under a point on empty page ── */
 /* clicks pass through blank table space inside an open unit; the row headers, links and controls keep their own jobs */
-const BLOCK='a,button,input,select,textarea,label,.uhead,.hero,.sbar,.top-bar,.help,.fab,.tipwrap,#gm,.gm-hint';
+const BLOCK='a,button,input,select,textarea,label,.uhead,.hero,.sbar,.top-bar,.help,.fab,.tipwrap,#gm';
 function vigAt(x,y){
   for(const v of vigs){if(!v)continue;
     const span=H+v.h+80,yy=(((v.y-SCY*.1)+v.h+40)%span+span)%span-v.h-40,m=14;
@@ -457,34 +457,10 @@ function vigAt(x,y){
   return null;
 }
 const emptyEl=el=>!!el&&!el.closest(BLOCK);
-let hov=null,hovKind="";
 document.addEventListener("click",e=>{
   if(S.open||e.defaultPrevented||e.button)return;
   if(!emptyEl(e.target))return;
   const hit=vigAt(e.clientX,e.clientY);if(!hit)return;
   const g=KIND2GAME[hit.v.kind]||pick(GAMES);start(g);
 });
-/* hover: the vignette under the pointer gets an outline and a "play" tag */
-if(typeof draw==="function"){
-  const draw0=draw;
-  draw=function(t){
-    draw0(t);
-    if(S.open||MX<-1e3){hov=null;return}
-    const hit=vigAt(MX,MY);
-    hov=hit&&emptyEl(document.elementFromPoint(MX,MY))?hit:null;
-    if(!hov)return;
-    const v=hov.v,yy=hov.yy,g=KIND2GAME[v.kind],C=colors(),tag="▶ play · "+(g?g.title:"a game");
-    cx.save();cx.setLineDash([4,5]);cx.strokeStyle=C.acc;cx.globalAlpha=.55;cx.lineWidth=1.2;
-    cx.beginPath();const x=v.x-12,y=yy-16,w=v.w+24,h=v.h+34,r=8;
-    cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath();cx.stroke();cx.setLineDash([]);
-    cx.globalAlpha=1;cx.font="600 10px "+MONO;const tw=cx.measureText(tag).width+16,tx=Math.min(Math.max(x,8),W-tw-8),ty=y+h+6;
-    cx.fillStyle=C.acc;cx.beginPath();cx.moveTo(tx+9,ty);cx.arcTo(tx+tw,ty,tx+tw,ty+18,9);cx.arcTo(tx+tw,ty+18,tx,ty+18,9);cx.arcTo(tx,ty+18,tx,ty,9);cx.arcTo(tx,ty,tx+tw,ty,9);cx.closePath();cx.fill();
-    cx.fillStyle="#fff";cx.textBaseline="middle";cx.fillText(tag,tx+8,ty+9.5);cx.textBaseline="alphabetic";cx.restore();
-  };
-}
-/* the hint at the foot of the page: one line, and the games by name for phones */
-const page=document.querySelector(".page");
-if(page){const h=document.createElement("div");h.className="gm-hint";
-  h.innerHTML="The drawings in the background are games. Click or tap one, or pick: "+GAMES.map((g,i)=>`<button type="button" data-g="${i}">${g.title}</button>`).join(" · ");
-  h.addEventListener("click",e=>{const b=e.target.closest("button[data-g]");if(b)start(GAMES[+b.dataset.g])});page.appendChild(h)}
 })();
